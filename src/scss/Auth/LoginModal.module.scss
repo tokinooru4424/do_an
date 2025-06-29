@@ -1,0 +1,159 @@
+.modalContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.input {
+  margin-bottom: 16px;
+}
+
+.button {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.errorMessage {
+  color: #ff4d4f;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.successMessage {
+  color: #52c41a;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.loginModalOverride {
+  :global(.ant-modal-root) .ant-modal-mask {
+    background: #111 !important;
+  }
+
+  :global(.ant-modal-content) {
+    background: #181c23 !important;
+    color: #fff !important;
+    border-radius: 16px;
+    width: 500px !important;
+  }
+
+  :global(.ant-modal-header) {
+    background: #181c23 !important;
+    border-bottom: none;
+  }
+
+  :global(.ant-modal-title) {
+    color: #fff !important;
+  }
+
+  :global(.ant-modal-close) {
+    color: #fff !important;
+  }
+
+  :global(.ant-input),
+  :global(.ant-input-password) {
+    background: #232733 !important;
+    color: #fff !important;
+    border-radius: 12px;
+    border: 1px solid #232733;
+  }
+
+  :global(.ant-input::placeholder),
+  :global(.ant-input-password input::placeholder) {
+    color: #bbb !important;
+  }
+
+  :global(.ant-btn-primary) {
+    background: linear-gradient(90deg, #ff3838 0%, #ff5f5f 100%) !important;
+    border: none;
+    border-radius: 24px;
+    color: #fff !important;
+    font-weight: 600;
+  }
+
+  :global(.ant-btn-primary:hover),
+  :global(.ant-btn-primary:focus) {
+    background: linear-gradient(90deg, #ff5f5f 0%, #ff3838 100%) !important;
+    color: #fff !important;
+  }
+
+  :global(.ant-form-item-label > label),
+  :global(.ant-form-item-required),
+  :global(.ant-form-item-label),
+  :global(.ant-form),
+  :global(.ant-typography),
+  :global(.ant-input),
+  :global(.ant-input-password),
+  :global(.ant-form-item-explain-error),
+  :global(.ant-form-item-explain),
+  :global(.ant-form-item) {
+    color: #fff !important;
+  }
+
+  :global(.ant-form-item-label > label.ant-form-item-required:not(.ant-form-item-required-mark-optional))::before {
+    color: #ff7875 !important;
+  }
+
+  :global(.ant-form-item-explain-error) {
+    color: #ff7875 !important;
+  }
+
+  :global(.ant-btn-link) {
+    color: #ff4d4f !important;
+  }
+
+  :global(.ant-input-password-icon) {
+    color: #fff !important;
+    fill: #fff !important;
+  }
+
+  /* Style cho liên kết Quên mật khẩu? */
+  .forgotPasswordLink {
+    text-align: right;
+    margin-bottom: 16px;
+
+    a {
+      color: #ff4d4f !important;
+      /* Đặt màu đỏ cho liên kết */
+      text-decoration: none;
+      /* Loại bỏ gạch chân mặc định */
+    }
+
+    a:hover {
+      text-decoration: underline;
+      /* Thêm gạch chân khi hover */
+    }
+  }
+
+  /* Style cho liên kết Đăng ký */
+  .registerLinkText {
+    text-align: center;
+    margin-top: 16px;
+    color: #b0b3b8;
+
+    /* Màu chữ cho phần text Bạn chưa có tài khoản? */
+    a {
+      color: #ff4d4f !important;
+      /* Đặt màu đỏ cho liên kết */
+      font-weight: 500;
+      /* Giữ độ đậm tương tự RegisterModal */
+      text-decoration: none;
+      /* Loại bỏ gạch chân mặc định */
+      margin-left: 4px;
+      /* Khoảng cách với text trước */
+    }
+
+    a:hover {
+      text-decoration: underline;
+      /* Thêm gạch chân khi hover */
+    }
+  }
+}

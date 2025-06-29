@@ -1,0 +1,208 @@
+{
+  "home": {
+    "title": "Trang chủ",
+    "description": "Trang chủ của hệ thống"
+  },
+  "action": "Action",
+  "login": {
+    "title": "Trang đăng nhập",
+    "description": "",
+    "content": "Chào mừng! Xin hãy đăng nhập vào tài khoản của bạn.",
+    "rememberMe": "Nhớ mật khẩu",
+    "forgotPassword": "Quên mật khẩu?",
+    "username": "Tên đăng nhập",
+    "password": "Mật khẩu",
+    "otp": "OTP"
+  },
+  "forgotPassword": {
+    "title": "Forgot Password",
+    "description": "",
+    "content": "Enter your email and we will send you a password reset link.",
+    "email": "Email"
+  },
+  "resetPassword": {
+    "title": "Reset Password",
+    "description": "",
+    "content": "Enter the new password and re-enter the password to reset the password",
+    "newPassword": "New Password",
+    "reNewPassword": "Re-new Password"
+  },
+  "changePassword": {
+    "title": "Change Password",
+    "password": "Password",
+    "rePassword": "Re-password"
+  },
+  "dashboard": {
+    "index": {
+      "title": "Bảng điều khiển",
+      "description": "Tại màn hình này, Bạn có thể chat với tư vấn viên hoặc bot"
+    }
+  },
+  "sendNotifacation": {
+    "index": {
+      "title": "Gửi thông báo",
+      "description": ""
+    },
+    "create": {
+      "title": "Tạo thông báo",
+      "description": ""
+    },
+    "editQnA": {
+      "title": "Sửa thông báo",
+      "description": ""
+    },
+    "table": {
+      "name": "Tên"
+    },
+    "form": {
+      "name": "Tên"
+    }
+  },
+  "users": {
+    "index": {
+      "title": "Danh sách Tài khoản",
+      "description": ""
+    },
+    "create": {
+      "title": "Tạo tài khoản mới",
+      "description": "Điền thông tin để tạo tài khoản mới"
+    },
+    "edit": {
+      "title": "Chỉnh sửa tài khoản",
+      "description": ""
+    },
+    "twofa": {
+      "title": "2-FA Settings",
+      "description": "",
+      "enabledAlready": "2FA is already enabled. You can turn it off at any time. But we do not recommend it.",
+      "notEnable": "You have not enabled 2FA. Please set up 2FA to connect to your phone for enhanced security.",
+      "twoFaRequired": "2FA is required.",
+      "link": {
+        "title": "To use two-step security. You need to install the Google Authenticator app on your mobile.",
+        "link": "You can download it here:",
+        "android": "https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en_SG",
+        "ios": "https://apps.apple.com/us/app/google-authenticator/id388497605"
+      }
+    },
+    "table": {
+      "username": "Tên đăng nhập",
+      "firstName": "Tên",
+      "lastName": "Họ",
+      "role": "Vai trò",
+      "parent": "Nhóm chính",
+      "email": "Email",
+      "createdAt": "Ngày tạo"
+    },
+    "form": {
+      "username": "Tên đăng nhập",
+      "firstName": "Tên",
+      "lastName": "Họ",
+      "role": "Vai trò",
+      "password": "Mật khẩu",
+      "email": "Email",
+      "rePassword": "Nhập lại mật khẩu",
+      "apiKey": "API Key",
+      "qrcode": "QR Code",
+      "enable2fa": "Enable",
+      "enterCode": "Enter Code",
+      "tags": "Tags"
+    },
+    "upload": {
+      "title": "Nhập excel danh sách người dùng",
+      "description": "Thêm người dùng bằng file excel"
+    }
+  },
+  "excel": {
+    "input": {
+      "startRow": "Dòng bắt đầu",
+      "from": "Bắt đầu",
+      "to": "Kết thúc"
+    },
+    "form": {
+      "excelFile": "File excel",
+      "descriptionReadyUploadFile": "Chọn file excel"
+    }
+  },
+  "upload": {
+    "choose": "Nhấp hoặc kéo tệp vào khu vực này để tải lên",
+    "description": "Hỗ trợ tải lên đơn lẻ hoặc hàng loạt",
+    "table": {
+      "header": {
+        "index": "STT",
+        "row": "Hàng",
+        "errorContent": "Nội dung lỗi"
+      },
+      "totalRecods": "Tổng bản ghi",
+      "totalErrorRecods": "Tổng bản ghi lỗi",
+      "totalWarringRecods": "Tổng bản ghi cần cảnh báo"
+    }
+  },
+  "roles": {
+    "index": {
+      "title": "Danh sách vai trò",
+      "description": "Bạn có thể tìm kiếm hoặc lọc theo điều kiện"
+    },
+    "create": {
+      "title": "Tạo vai trò mới",
+      "description": "Điền thông tin để tạo vai trò mới"
+    },
+    "edit": {
+      "title": "Chỉnh sửa vai trò",
+      "description": ""
+    },
+    "role": {
+      "title": "Phân quyền",
+      "description": "Chọn các quyền phù hợp cho các vai trò trong hệ thống."
+    },
+    "table": {
+      "name": "Tên",
+      "description": "Mô tả",
+      "decentralization": "Phân quyền",
+      "parent": "Nhóm chính",
+      "createdAt": "Ngày tạo"
+    },
+    "form": {
+      "name": "Tên",
+      "description": "Mô tả",
+      "parent": "Nhóm chính"
+    }
+  },
+  "settings": {
+    "index": {
+      "title": "Danh sách cài đặt",
+      "description": ""
+    },
+    "edit": {
+      "title": "Chỉnh sửa cài đặt",
+      "description": ""
+    },
+    "table": {
+      "name": "Tên",
+      "description": "Mô tả",
+      "key": "Key",
+      "value": "Value",
+      "valueNumber": "Tỷ lệ (%)",
+      "createdAt": "Ngày tạo"
+    },
+    "form": {
+      "name": "Tên",
+      "description": "Mô tả",
+      "key": "Key",
+      "valueNumber": "Tỷ lệ (%)",
+      "value": "Value"
+    }
+  },
+  "errors": {
+    "403": {
+      "title": "Bạn không có quyền truy cập",
+      "description": "Xin lỗi, bạn không có quyền truy cập trang này.",
+      "permissionDetail": "Trang này yêu cầu quyền: \"{{permission}}\" với giá trị: \"{{requirePermission}}\". Nhưng bạn có: \"{{userPermission}}\"."
+    },
+    "404": {
+      "title": "404! Không tìm thấy trang",
+      "notfound": "Oops! Không tìm thấy trang",
+      "content": "Trang bạn đang truy cập có thể đã bị xóa hoặc tạm thời không có sẵn. Vui lòng quay lại trang này sau!",
+      "goBack": "Quay lại"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "frontend": {
+    "admin": {
+      "dashboard": {
+        "index": "Bảng điều khiển"
+      },
+      "users": {
+        "title": "Quản lý tài khoản",
+        "index": "Danh sách tài khoản",
+        "edit": "Chỉnh sửa tài khoản",
+        "create": "Tạo tài khoản",
+        "twofa": "Cài đặt 2FA",
+        "upload": "Tải lên danh sách tài khoản"
+      },
+      "roles": {
+        "index": "Danh sách vai trò",
+        "create": "Tạo vai trò",
+        "edit": "Chỉnh sửa vai trò",
+        "decentralization": "Phân quyền"
+      },
+      "settings": {
+        "index": "Cài đặt"
+      }
+    }
+  }
+}

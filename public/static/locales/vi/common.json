@@ -1,0 +1,14 @@
+{
+  "hi": "Hi, {{ username }}",
+  "_no": "Không",
+  "startLine": "Dòng đầu tiên",
+  "loading": "Đang tải! Vui lòng chờ...",
+  "name": "Tên",
+  "description": "Mô tả",
+  "create": "Tạo",
+  "edit": "Chỉnh sửa",
+  "delete": "Xóa",
+  "OK": "OK",
+  "NOK": "NOK",
+  "loadingView": "Đang tải..."
+}

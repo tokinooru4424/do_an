@@ -1,0 +1,539 @@
+{
+  "formattedHeader": {
+    "cells": [
+      {
+        "row": 0,
+        "column": 1,
+        "style": {
+          "font": {
+            "bold": true,
+            "size": 10,
+            "name": "Times New Roman",
+            "family": 1
+          },
+          "fill": {
+            "type": "pattern",
+            "pattern": "none"
+          },
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "middle",
+            "wrapText": true
+          },
+          "border": {
+            "left": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "right": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "top": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "bottom": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            }
+          }
+        },
+        "value": "STT"
+      },
+      {
+        "row": 0,
+        "column": 2,
+        "style": {
+          "font": {
+            "bold": true,
+            "size": 10,
+            "name": "Times New Roman",
+            "family": 1
+          },
+          "fill": {
+            "type": "pattern",
+            "pattern": "none"
+          },
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "middle",
+            "wrapText": true
+          },
+          "border": {
+            "left": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "right": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "top": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "bottom": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            }
+          }
+        },
+        "value": "Tên đăng nhập"
+      },
+      {
+        "row": 0,
+        "column": 3,
+        "style": {
+          "font": {
+            "bold": true,
+            "size": 10,
+            "name": "Times New Roman",
+            "family": 1
+          },
+          "fill": {
+            "type": "pattern",
+            "pattern": "none"
+          },
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "middle",
+            "wrapText": true
+          },
+          "border": {
+            "left": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "right": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "top": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "bottom": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            }
+          }
+        },
+        "value": "Họ"
+      },
+      {
+        "row": 0,
+        "column": 4,
+        "style": {
+          "font": {
+            "bold": true,
+            "size": 10,
+            "name": "Times New Roman",
+            "family": 1
+          },
+          "fill": {
+            "type": "pattern",
+            "pattern": "none"
+          },
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "middle",
+            "wrapText": true
+          },
+          "border": {
+            "left": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "right": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "top": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "bottom": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            }
+          }
+        },
+        "value": "Tên"
+      },
+      {
+        "row": 0,
+        "column": 5,
+        "style": {
+          "font": {
+            "bold": true,
+            "size": 10,
+            "name": "Times New Roman",
+            "family": 1
+          },
+          "fill": {
+            "type": "pattern",
+            "pattern": "none"
+          },
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "middle",
+            "wrapText": true
+          },
+          "border": {
+            "left": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "right": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "top": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "bottom": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            }
+          }
+        },
+        "value": "Email"
+      },
+      {
+        "row": 0,
+        "column": 6,
+        "style": {
+          "font": {
+            "bold": true,
+            "size": 10,
+            "name": "Times New Roman",
+            "family": 1
+          },
+          "fill": {
+            "type": "pattern",
+            "pattern": "none"
+          },
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "middle",
+            "wrapText": true
+          },
+          "border": {
+            "left": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "right": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "top": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "bottom": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            }
+          }
+        },
+        "value": "Vai trò"
+      },
+      {
+        "row": 0,
+        "column": 7,
+        "style": {
+          "font": {
+            "bold": true,
+            "size": 10,
+            "name": "Times New Roman",
+            "family": 1
+          },
+          "fill": {
+            "type": "pattern",
+            "pattern": "none"
+          },
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "middle",
+            "wrapText": true
+          },
+          "border": {
+            "left": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "right": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "top": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            },
+            "bottom": {
+              "style": "thin",
+              "color": {
+                "indexed": 64
+              }
+            }
+          }
+        },
+        "value": "Ngày tạo"
+      }
+    ],
+    "merged": []
+  },
+  "formattedFooter": {
+    "cells": [],
+    "merged": []
+  },
+  "columnWidths": [
+    {
+      "style": {
+        "font": {
+          "size": 10,
+          "name": "Times New Roman",
+          "family": 1
+        },
+        "border": {},
+        "fill": {
+          "type": "pattern",
+          "pattern": "none"
+        },
+        "alignment": {
+          "horizontal": "center"
+        }
+      },
+      "width": 5,
+      "_number": 1
+    },
+    {
+      "style": {
+        "font": {
+          "size": 10,
+          "name": "Times New Roman",
+          "family": 1
+        },
+        "border": {},
+        "fill": {
+          "type": "pattern",
+          "pattern": "none"
+        },
+        "alignment": {
+          "horizontal": "left",
+          "vertical": "middle",
+          "wrapText": true
+        }
+      },
+      "width": 14,
+      "_number": 2
+    },
+    {
+      "style": {
+        "font": {
+          "size": 10,
+          "name": "Times New Roman",
+          "family": 1
+        },
+        "border": {},
+        "fill": {
+          "type": "pattern",
+          "pattern": "none"
+        },
+        "alignment": {
+          "horizontal": "left",
+          "vertical": "middle",
+          "wrapText": true
+        }
+      },
+      "width": 11,
+      "_number": 3
+    },
+    {
+      "style": {
+        "font": {
+          "size": 10,
+          "name": "Times New Roman",
+          "family": 1
+        },
+        "border": {},
+        "fill": {
+          "type": "pattern",
+          "pattern": "none"
+        },
+        "alignment": {
+          "horizontal": "left",
+          "vertical": "middle",
+          "wrapText": true
+        }
+      },
+      "width": 11,
+      "_number": 4
+    },
+    {
+      "style": {
+        "font": {
+          "size": 10,
+          "name": "Times New Roman",
+          "family": 1
+        },
+        "border": {},
+        "fill": {
+          "type": "pattern",
+          "pattern": "none"
+        },
+        "alignment": {
+          "horizontal": "left",
+          "vertical": "middle",
+          "wrapText": true
+        }
+      },
+      "width": 26,
+      "_number": 5
+    },
+    {
+      "style": {
+        "font": {
+          "size": 10,
+          "name": "Times New Roman",
+          "family": 1
+        },
+        "border": {},
+        "fill": {
+          "type": "pattern",
+          "pattern": "none"
+        },
+        "alignment": {
+          "horizontal": "center",
+          "vertical": "middle",
+          "wrapText": true
+        }
+      },
+      "width": 16,
+      "_number": 6
+    },
+    {
+      "style": {
+        "font": {
+          "size": 10,
+          "name": "Times New Roman",
+          "family": 1
+        },
+        "border": {},
+        "fill": {
+          "type": "pattern",
+          "pattern": "none"
+        },
+        "alignment": {
+          "horizontal": "center",
+          "vertical": "middle",
+          "wrapText": true
+        }
+      },
+      "width": 26,
+      "_number": 7
+    }
+  ],
+  "dataCellStyle": {
+    "font": {
+      "size": 10,
+      "name": "Times New Roman",
+      "family": 1
+    },
+    "border": {
+      "left": {
+        "style": "thin",
+        "color": {
+          "indexed": 64
+        }
+      },
+      "right": {
+        "style": "thin",
+        "color": {
+          "indexed": 64
+        }
+      },
+      "top": {
+        "style": "thin",
+        "color": {
+          "indexed": 64
+        }
+      },
+      "bottom": {
+        "style": "hair",
+        "color": {
+          "indexed": 64
+        }
+      }
+    },
+    "fill": {
+      "type": "pattern",
+      "pattern": "none"
+    },
+    "alignment": {
+      "vertical": "middle",
+      "wrapText": true
+    }
+  },
+  "height": {
+    "header": 0,
+    "footer": 5
+  }
+}

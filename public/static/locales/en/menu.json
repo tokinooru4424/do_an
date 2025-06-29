@@ -1,0 +1,22 @@
+{
+  "frontend": {
+    "admin": {
+      "dashboard": {
+        "index": "Dashboard"
+      },
+      "users": {
+        "title": "Account Management",
+        "index": "List Of Accounts",
+        "edit": "Edit Account",
+        "create": "Add Account",
+        "twofa": "2FA Settings"
+      },
+      "roles": {
+        "index": "Role Group Management",
+        "create": "Add Role Group",
+        "edit": "Edit Role Group",
+        "role": "Decentralization Role Group"
+      }
+    }
+  }
+}
