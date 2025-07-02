@@ -49,6 +49,13 @@ const sidebar = [
       }
     ]
   },
+  {
+    routeName: "frontend.admin.cinemas.index",
+    icon: <AppstoreOutlined />,
+    permissions: {
+      cinemas: "R",
+    },
+  }
 ];
 
 export default sidebar;

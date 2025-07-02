@@ -2,6 +2,7 @@ import React from "react";
 import { Form, Input, Row, Col, Select } from "antd";
 import { LockOutlined } from "@ant-design/icons";
 import useSWR from "swr";
+import { DatePicker } from "antd";
 
 import useBaseHook from "@src/hooks/BaseHook";
 import validatorHook from "@src/hooks/ValidatorHook";
@@ -84,29 +85,15 @@ const UserForm = ({ form, isEdit }: { form: any; isEdit: boolean }) => {
 
       <Col md={12}>
         <Form.Item
-          label={t("pages:users.form.lastName")}
-          name="lastName"
+          label={t("pages:users.form.name")}
+          name="name"
           rules={[
-            { required: true, message: t("messages:form.required", { name: t("pages:users.form.lastName") }) },
-            { whitespace: true, message: t("messages:form.required", { name: t("pages:users.form.lastName") }) },
-            { max: 255, message: t("messages:form.maxLength", { name: t("pages:users.form.lastName"), length: 255 }) },
+            { required: true, message: t("messages:form.required", { name: t("pages:users.form.name") }) },
+            { whitespace: true, message: t("messages:form.required", { name: t("pages:users.form.name") }) },
+            { max: 255, message: t("messages:form.maxLength", { name: t("pages:users.form.name"), length: 255 }) },
           ]}
         >
-          <Input placeholder={t("pages:users.form.lastName")} />
-        </Form.Item>
-      </Col>
-
-      <Col md={12}>
-        <Form.Item
-          label={t("pages:users.form.firstName")}
-          name="firstName"
-          rules={[
-            { required: true, message: t("messages:form.required", { name: t("pages:users.form.firstName") }) },
-            { whitespace: true, message: t("messages:form.required", { name: t("pages:users.form.firstName") }) },
-            { max: 255, message: t("messages:form.maxLength", { name: t("pages:users.form.firstName"), length: 255 }) },
-          ]}
-        >
-          <Input placeholder={t("pages:users.form.firstName")} />
+          <Input placeholder={t("pages:users.form.name")} />
         </Form.Item>
       </Col>
 
@@ -124,6 +111,43 @@ const UserForm = ({ form, isEdit }: { form: any; isEdit: boolean }) => {
             placeholder={t('pages:users.form.email')}
             type="email"
           />
+        </Form.Item>
+      </Col>
+
+      <Col md={12}>
+        <Form.Item
+          label={t("pages:users.form.phoneNumber")}
+          name="phoneNumber"
+          rules={[
+            { required: true, message: t("messages:form.required", { name: t("pages:users.form.phoneNumber") }) },
+            { pattern: /^\d{10}$/, message: t("messages:form.phoneNumberLength") }
+          ]}
+        >
+          <Input
+            placeholder={t("pages:users.form.phoneNumber")}
+            maxLength={10}
+            inputMode="numeric"
+            onChange={e => {
+              const onlyNums = e.target.value.replace(/\D/g, "");
+              if (onlyNums.length <= 10) {
+                e.target.value = onlyNums;
+              } else {
+                e.target.value = onlyNums.slice(0, 10);
+              }
+            }}
+          />
+        </Form.Item>
+      </Col>
+
+      <Col md={12}>
+        <Form.Item
+          label={t("pages:users.form.birthday")}
+          name="birthday"
+          rules={[
+            { required: true, message: t("messages:form.required", { name: t("pages:users.form.birthday") }) },
+          ]}
+        >
+          <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" placeholder={t("pages:users.form.birthday")} />
         </Form.Item>
       </Col>
 

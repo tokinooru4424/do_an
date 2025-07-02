@@ -10,7 +10,7 @@
     "content": "Chào mừng! Xin hãy đăng nhập vào tài khoản của bạn.",
     "rememberMe": "Nhớ mật khẩu",
     "forgotPassword": "Quên mật khẩu?",
-    "username": "Tên đăng nhập",
+    "email": "Email",
     "password": "Mật khẩu",
     "otp": "OTP"
   },
@@ -71,6 +71,10 @@
       "title": "Chỉnh sửa tài khoản",
       "description": ""
     },
+    "view": {
+      "title": "Thông tin tài khoản",
+      "description": ""
+    },
     "twofa": {
       "title": "2-FA Settings",
       "description": "",
@@ -86,20 +90,23 @@
     },
     "table": {
       "username": "Tên đăng nhập",
-      "firstName": "Tên",
-      "lastName": "Họ",
+      "name": "Tên",
       "role": "Vai trò",
       "parent": "Nhóm chính",
       "email": "Email",
-      "createdAt": "Ngày tạo"
+      "phoneNumber": "Số điện thoại",
+      "birthday": "Ngày sinh",
+      "createdAt": "Ngày tạo",
+      "actions": "Hành động"
     },
     "form": {
       "username": "Tên đăng nhập",
-      "firstName": "Tên",
-      "lastName": "Họ",
+      "name": "Tên",
       "role": "Vai trò",
       "password": "Mật khẩu",
       "email": "Email",
+      "phoneNumber": "Số điện thoại",
+      "birthday": "Ngày sinh",
       "rePassword": "Nhập lại mật khẩu",
       "apiKey": "API Key",
       "qrcode": "QR Code",
@@ -190,6 +197,40 @@
       "key": "Key",
       "valueNumber": "Tỷ lệ (%)",
       "value": "Value"
+    }
+  },
+  "cinemas": {
+    "index": {
+      "title": "Danh sách rạp",
+      "description": ""
+    },
+    "create": {
+      "title": "Tạo rạp mới",
+      "description": ""
+    },
+    "edit": {
+      "title": "Chỉnh sửa rạp",
+      "description": ""
+    },
+    "view": {
+      "title": "Thông tin rạp",
+      "description": ""
+    },
+    "table": {
+      "name": "Tên rạp",
+      "address": "Địa chỉ",
+      "phoneNumber": "Số điện thoại",
+      "email": "Email",
+      "description": "Mô tả",
+      "createdAt": "Ngày tạo",
+      "actions": "Hành động"
+    },
+    "form": {
+      "name": "Tên rạp",
+      "description": "Mô tả",
+      "address": "Địa chỉ",
+      "phoneNumber": "Số điện thoại",
+      "email": "Email"
     }
   },
   "errors": {

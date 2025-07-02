@@ -9,10 +9,10 @@ import { Button, ConfigProvider, Space, Tooltip } from "antd";
 import { PlusCircleOutlined, DeleteOutlined, EditOutlined, CloudUploadOutlined, EyeOutlined } from "@ant-design/icons";
 import { confirmDialog } from "@src/helpers/dialogs";
 import { formatDate } from '@src/helpers/utils'
-import ExportExcel from '@root/src/components/Admin/Users/Export';
+
 
 import FilterDatePicker from "@src/components/Table/SearchComponents/DatePicker";
-import userService from "@root/src/services/userService";
+import cinemaService from "@root/src/services/cinemaService";
 
 import to from "await-to-js";
 import auth from "@src/helpers/auth";
@@ -30,66 +30,58 @@ const Index = () => {
 
   const { checkPermission } = usePermissionHook();
   const createPer = checkPermission({
-    users: "C",
+    cinemas: "C",
   });
   const updatePer = checkPermission({
-    users: "U",
+    cinemas: "U",
   });
   const deletePer = checkPermission({
-    users: "D",
+    cinemas: "D",
   });
   const viewPer = checkPermission({
-    users: "R"
+    cinemas: "R"
   });
 
   const columns = [
     {
-      title: t("pages:users.table.username"),
-      dataIndex: "username",
-      key: "users.username",
-      sorter: true,
-      filterable: true,
-    },
-    {
-      title: t("pages:users.table.name"),
+      title: t("pages:cinemas.table.name"),
       dataIndex: "name",
-      key: "users.name",
+      key: "cinemas.name",
       sorter: true,
       filterable: true,
     },
     {
-      title: t("pages:users.table.email"),
+      title: t("pages:cinemas.table.email"),
       dataIndex: "email",
-      key: "users.email",
+      key: "cinemas.email",
       sorter: true,
       filterable: true,
     },
     {
-      title: t("pages:users.table.phoneNumber"),
+      title: t("pages:cinemas.table.phoneNumber"),
       dataIndex: "phoneNumber",
-      key: "users.phoneNumber",
+      key: "cinemas.phoneNumber",
       sorter: true,
       filterable: true,
     },
     {
-      title: t("pages:users.table.birthday"),
-      dataIndex: "birthday",
-      key: "users.birthday",
-      sorter: true,
-      filterable: true,
-      render: (text: string) => text ? moment(text).format("DD/MM/YYYY") : "",
-    },
-    {
-      title: t("pages:users.table.role"),
-      dataIndex: "role",
-      key: "roles.name",
+      title: t("pages:cinemas.table.address"),
+      dataIndex: "address",
+      key: "cinemas.address",
       sorter: true,
       filterable: true,
     },
     {
-      title: t("pages:users.table.createdAt"),
+      title: t("pages:cinemas.table.description"),
+      dataIndex: "description",
+      key: "cinemas.description",
+      sorter: true,
+      filterable: true,
+    },
+    {
+      title: t("pages:cinemas.table.createdAt"),
       dataIndex: "createdAt",
-      key: "users.createdAt",
+      key: "cinemas.createdAt",
       sorter: true,
       filterable: true,
       render: (text: Date, record: any) => formatDate(text),
@@ -98,11 +90,11 @@ const Index = () => {
       ),
     },
     {
-      title: t("pages:users.table.actions"),
+      title: t("pages:cinemas.table.actions"),
       key: "actions",
       fixed: "right",
-      width: 100,
-      render: (text: string, record: User) => (
+      width: 120,
+      render: (text: string, record: Cinema) => (
         <ConfigProvider
           theme={{
             components: {
@@ -127,7 +119,7 @@ const Index = () => {
                   color: '#1890ff',
                   borderColor: '#1890ff'
                 }}
-                onClick={() => redirect("frontend.admin.users.view", { id: record.id })}
+                onClick={() => redirect("frontend.admin.cinemas.view", { id: record.id })}
                 hidden={!viewPer}
               />
             </Tooltip>
@@ -141,7 +133,7 @@ const Index = () => {
                   color: '#52c41a',
                   borderColor: '#52c41a'
                 }}
-                onClick={() => redirect("frontend.admin.users.edit", { id: record.id })}
+                onClick={() => redirect("frontend.admin.cinemas.edit", { id: record.id })}
                 hidden={!updatePer}
               />
             </Tooltip>
@@ -158,10 +150,10 @@ const Index = () => {
                     content: t("messages:message.deleteConfirm"),
                     onOk: async () => {
                       let [error, result]: any[] = await to(
-                        userService().withAuth().destroy({ id: record.id })
+                        cinemaService().withAuth().destroy({ id: record.id })
                       );
                       if (error) return notify(t(`errors:${error.code}`), "", "error");
-                      notify(t("messages:message.recordUserDeleted"));
+                      notify(t("messages:message.recordCinemaDeleted"));
                       if (tableRef.current !== null) {
                         tableRef.current.reload();
                       }
@@ -169,7 +161,7 @@ const Index = () => {
                     },
                   });
                 }}
-                hidden={!deletePer || record.id == auth().user.id}
+                hidden={!deletePer}
               />
             </Tooltip>
           </Space>
@@ -186,12 +178,12 @@ const Index = () => {
 
   const fetchData = async (values: any) => {
     if (!values.sorting.length) {
-      values.sorting = [{ field: "users.id", direction: "desc" }];
+      values.sorting = [{ field: "cinemas.id", direction: "desc" }];
     }
     setCacheFilter(values)
 
-    let [error, users]: [any, User[]] = await to(
-      userService().withAuth().index(values)
+    let [error, cinemas]: [any, any[]] = await to(
+      cinemaService().withAuth().index(values)
     );
     if (error) {
       const { code, message } = error;
@@ -199,29 +191,16 @@ const Index = () => {
       return {};
     }
 
-    return users;
+    return cinemas;
   };
-
-  const onExportExcel = async () => {
-    let [error, users]: [any, User[]] = await to(
-      userService().withAuth().index(cacheFilter)
-    );
-    if (error) {
-      const { code, message } = error;
-      notify(t(`errors:${code}`), t(message), "error");
-      return {};
-    }
-
-    return getData(users, 'data', []);
-  }
 
   const onDelete = async () => {
     let [error, result]: any[] = await to(
-      userService().withAuth().delete({ ids: selectedIds })
+      cinemaService().withAuth().delete({ ids: selectedIds })
     );
 
     if (error) return notify(t(`errors:${error.code}`), "", "error");
-    notify(t("messages:message.recordUserDeleted"));
+    notify(t("messages:message.recordCinemaDeleted"));
 
     if (tableRef.current !== null) {
       tableRef.current.reload();
@@ -235,7 +214,6 @@ const Index = () => {
 
   const rowSelection = {
     getCheckboxProps: (record) => ({
-      disabled: record.id == auth().user.id,
       id: record.id,
     }),
   };
@@ -244,7 +222,7 @@ const Index = () => {
     <div className="content">
       <Button
         hidden={!createPer}
-        onClick={() => redirect("frontend.admin.users.create")}
+        onClick={() => redirect("frontend.admin.cinemas.create")}
         type="primary"
         className="btn-top"
       >
@@ -268,24 +246,6 @@ const Index = () => {
         {t("buttons:delete")}
       </Button>
 
-      <Button
-        hidden={!createPer}
-        onClick={() => redirect('frontend.admin.users.upload')}
-        type="primary"
-        style={{
-          backgroundColor: '#fc5603',
-          border: 'none'
-        }}
-        className="btn-right"
-      >
-        <CloudUploadOutlined />
-        {t('buttons:uploadExcel')}
-      </Button>
-
-      <ExportExcel
-        fetcher={onExportExcel} // API dùng để lấy dữ liệu và set vào body của file excel
-      />
-
       <GridTable
         ref={tableRef}
         columns={columns}
@@ -306,15 +266,15 @@ Index.Layout = (props) => {
 
   return (
     <Layout
-      title={t("pages:users.index.title")}
-      description={t("pages:users.index.description")}
+      title={t("pages:cinemas.index.title")}
+      description={t("pages:cinemas.index.description")}
       {...props}
     />
   );
 };
 
 Index.permissions = {
-  "users": "R",
+  "cinemas": "R",
 };
 
 export default Index;

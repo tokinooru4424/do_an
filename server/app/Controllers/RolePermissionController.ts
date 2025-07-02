@@ -62,7 +62,18 @@ export default class PermissionController extends BaseController {
     let role = await this.RoleModel.getById(params.roleId)
     if (!role) throw new ApiException(6000, "User role doesn't exist!")
 
-    let permissions = await this.Model.query().whereNot('key','root')
+    // Nếu là root, trả về tất cả quyền với value = 15
+    if (role.key === 'root') {
+      let permissions = await this.Model.query();
+      permissions = permissions.map(p => ({
+        ...p,
+        currentValue: 15
+      }));
+      role['permissions'] = permissions;
+      return [role];
+    }
+
+    let permissions = await this.Model.query().whereNot('key', 'root')
 
     for (let index in permissions) {
       let permission = permissions[index]

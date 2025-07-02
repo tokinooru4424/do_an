@@ -1,10 +1,11 @@
-import React, { Component } from "react";
-import { SearchOutlined } from "@ant-design/icons";
-import { Table } from "antd";
+import React, { Component, Fragment } from "react";
+import { FilterOutlined, SearchOutlined, ReloadOutlined } from "@ant-design/icons";
+import { Table, Button, Typography } from "antd";
 import { addQuery } from "@src/helpers/routes";
 import { Base64 } from "js-base64";
 import FilterInput from "./SearchComponents/Input";
 import _ from "lodash";
+import dayjs from "dayjs";
 
 class GridTable extends Component {
   constructor(props) {
@@ -19,6 +20,7 @@ class GridTable extends Component {
     this.state = {
       loading: false,
       reload: false,
+      tableKey: 0,
     };
 
     this.pagination = {};
@@ -33,7 +35,6 @@ class GridTable extends Component {
    */
   defaultOptionToColumns = (defaultOptions) => {
     this.columns = this.columns.map((column) => {
-
       //set field
       if (!column.field) {
         column.field = column.key;
@@ -45,15 +46,19 @@ class GridTable extends Component {
       if (sort) {
         let { direction } = sort;
         column.sortOrder = direction === "asc" ? "ascend" : "descend";
-      }
-      else {
-        delete column.sortOrder
+      } else {
+        delete column.sortOrder;
       }
 
-      let filters = defaultOptions.filters.filter(
-        (item) => item.field === column.field
-      );
-      if (filters.length) {
+      let filters = [];
+      for (let i of defaultOptions.filters) {
+        if (
+          i.field === column.field ||
+          (i.operator == "raw" && this.arrEqual(i.field, column.field))
+        )
+          filters.push(i);
+      }
+      if (filters && filters.length) {
         column.filteredValue = [...filters];
       } else {
         column.filteredValue = [];
@@ -72,16 +77,35 @@ class GridTable extends Component {
     //this.setState({ reload: !this.state.reload });
   }
 
+  arrEqual(arr1, arr2) {
+    if (!arr1?.length || !arr2?.length) return false;
+    if (arr1?.length !== arr2?.length) return false;
+
+    let sortedArr1 = arr1.slice().sort();
+    let sortedArr2 = arr2.slice().sort();
+
+    for (let i = 0; i < sortedArr1?.length; i++) {
+      if (sortedArr1[i] !== sortedArr2[i]) return false;
+    }
+
+    return true;
+  }
+
   componentDidUpdate(prevProps) {
     //update data trong trường hợp đổi từ props bên ngoài
     if (JSON.stringify(prevProps.data) !== JSON.stringify(this.props.data)) {
       this.data = this.props.data;
     }
 
-    if (JSON.stringify(prevProps.columns) !== JSON.stringify(this.props.columns)) {
-      this.init()
+    if (
+      JSON.stringify(prevProps.columns) !== JSON.stringify(this.props.columns)
+    ) {
+      this.init();
     }
-    if (JSON.stringify(this.props.router.query) != JSON.stringify(prevProps.router.query)) {
+    if (
+      JSON.stringify(this.props.router.query) !=
+      JSON.stringify(prevProps.router.query)
+    ) {
       this.setState({ reload: !this.state.reload }); //chỉ cần render lại view
     }
   }
@@ -113,6 +137,8 @@ class GridTable extends Component {
    */
   getColumnSearchProps = (column) => {
     let ref = React.createRef();
+    let type = _.get(column, "filterType", "text");
+
     return {
       filterDropdown: ({ confirm, setSelectedKeys }) => {
         //gọi hàm confirm mỗi lần submit form search
@@ -124,10 +150,19 @@ class GridTable extends Component {
         if (column.renderFilter) {
           return column.renderFilter({ column, confirm: confirmFnc, ref });
         }
-        return <FilterInput column={column} ref={ref} confirm={confirmFnc} />;
+        return (
+          <FilterInput
+            column={column}
+            ref={ref}
+            type={type}
+            confirm={confirmFnc}
+          />
+        );
       },
       filterIcon: (filtered) => {
-        return <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+        return (
+          <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+        );
       },
       onFilterDropdownOpenChange: (visible) => {
         if (!visible && column.visibleSearch != visible) {
@@ -151,21 +186,22 @@ class GridTable extends Component {
    */
   init() {
     const query = this.props.router.query;
-    const defaultOptions = GridTable.getDataFromQuery(query, this.props);
-
+    //fix bug luu lai query truoc do
+    let defaultOptions = GridTable.getDataFromQuery({}, this.props);
+    if (this.props.firstOptions) defaultOptions = this.props.firstOptions;
     this.pagination = {
       pageSize: defaultOptions.pageSize || 50,
       page: defaultOptions.page || 0,
     };
-    this.columns = (this.props.columns || []).map(column => ({ ...column })); //deepClone
+    this.columns = (this.props.columns || []).map((column) => ({ ...column })); //deepClone
     if (this.addIndexCol) {
       this.columns.unshift({
-        title: "No",
-        align: 'center',
+        title: "STT",
+        align: "center",
         dataIndex: "base_index",
         key: "base_index",
         width: 50,
-        responsive: ['lg']
+        responsive: ["lg"],
       });
     }
     this.defaultOptionToColumns(defaultOptions);
@@ -213,7 +249,7 @@ class GridTable extends Component {
         column.sortOrder = sorter.order;
       } else {
         //delete column.sortOrder;
-        column.sortOrder = null
+        column.sortOrder = null;
       }
       return column;
     });
@@ -275,6 +311,11 @@ class GridTable extends Component {
     return defaultOptions;
   }
 
+  isISOString = (value) => {
+    const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
+    return isoRegex.test(value);
+  };
+
   /**
    * Build data từ this.columns để khớp với format trên server
    */
@@ -289,19 +330,25 @@ class GridTable extends Component {
     this.columns.map((column) => {
       if (column.filteredValue) {
         column.filteredValue = column.filteredValue.map((filter) => {
-          if (filter.value && Array.isArray(filter.value) && filter.value.length) {
-            filter.value = filter.value.map(v => v.replaceAll(`%`, '%25'))
+          if (
+            filter.value &&
+            Array.isArray(filter.value) &&
+            filter.value.length
+          ) {
+            filter.value = filter.value.map((v) =>
+              String(v).replaceAll(`%`, "%25")
+            );
             return {
               ...filter,
-              value: (filter.value || '')
-            }
+              value: filter.value || "",
+            };
           } else {
             return {
               ...filter,
-              value: (filter.value || '').replaceAll(`%`, '%25')
-            }
+              value: String(filter.value || "").replaceAll(`%`, "%25"),
+            };
           }
-        })
+        });
         params.filters = [...params.filters, ...column.filteredValue];
       }
       if (column.sortOrder) {
@@ -312,6 +359,16 @@ class GridTable extends Component {
       }
     });
     return params;
+  };
+
+  formatTimeFilter = (data) => {
+    data.value[0] = dayjs(data.value[0], "DD/MM/YYYY")
+      .startOf("days")
+      .toISOString();
+    data.value[1] = dayjs(data.value[1], "DD/MM/YYYY")
+      .endOf("days")
+      .toISOString();
+    return data;
   };
 
   getPagination = (pagination) => {
@@ -330,6 +387,75 @@ class GridTable extends Component {
     };
   };
 
+  renderButtonClearTable() {
+    return (
+      <Fragment>
+        <Button
+          title="Xóa tất cả bộ lọc"
+          icon={<FilterOutlined />}
+          shape="round"
+          style={{ marginRight: "5px" }}
+          onClick={async (e) => {
+            e.preventDefault();
+            if (typeof this.props?.clearStoreFilter === "function") {
+              await this.props.clearStoreFilter();
+              this.init();
+            }
+            this.props.router.query = {};
+            this.setState({ tableKey: this.state.tableKey + 1 }); // Đổi table key để re-render lại clear value trong filter
+            this.init();
+            // this.props.clearFilter();
+            if (typeof this.props?.clearFilter === "function") {
+              this.props.clearFilter();
+            }
+            // this.setState({ clearfilter: "0" })
+          }}
+        ></Button>
+      </Fragment>
+    );
+  }
+
+  renderButtonRefreshTable() {
+    return (
+      <Fragment>
+        <Button
+          title="Làm mới dữ liệu"
+          icon={<ReloadOutlined />}
+          shape="round"
+          onClick={async (e) => {
+            e.preventDefault();
+            this.pagination.page = 0;
+            this.reload();
+            // this.props.clearFilter();
+            if (typeof this.props?.clearFilter === "function") {
+              this.props.clearFilter();
+            }
+          }}
+        ></Button>
+      </Fragment>
+    );
+  }
+
+  renderDescription() {
+    if (!this.props.description) return null;
+    if (React.isValidElement(this.props.description)) {
+      return this.props.description;
+    }
+    if (typeof this.props.description === "string") {
+      return (
+        <Typography.Text
+          type="danger"
+          ellipsis={{
+            rows: 1,
+          }}
+        >
+          {this.props.description}
+        </Typography.Text>
+      );
+    }
+    return null;
+  }
+
   render() {
     const {
       hasData = true,
@@ -338,16 +464,42 @@ class GridTable extends Component {
       fetchData,
       columns,
       pagination,
+      hiddenButtonClearFilterButton = false,
+      hiddenButtonRefreshButton = false,
+      hiddenPagination = false,
+      description,
       ...otherProps
     } = this.props;
+
     const { page = 0, pageSize = 50 } = this.pagination || {};
+
+    const showButtons = !hiddenButtonClearFilterButton || !hiddenButtonRefreshButton;
+
     return (
       <div>
+        {showButtons && (
+          <div style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '99%',
+            gap: '20px',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: "5px" }}>
+              {!hiddenButtonClearFilterButton && this.renderButtonClearTable()}
+              {!hiddenButtonRefreshButton && this.renderButtonRefreshTable()}
+            </div>
+            {this.renderDescription()}
+          </div>
+        )}
         <Table
           {...this.initialProps}
           // tableLayout="fixed"
+          key={this.state.tableKey}
           scroll={{
             x: 900,
+            y: 500,
             scrollToFirstRowOnChange: true,
           }}
           {...otherProps}
@@ -363,7 +515,20 @@ class GridTable extends Component {
           }
           onChange={this.handleTableChange}
           loading={this.state.loading}
-          pagination={this.getPagination(pagination)}
+          pagination={
+            hiddenPagination
+              ? { position: ["none", "none"] }
+              : this.getPagination(pagination)
+          }
+          rowClassName={(record, index) => {
+            if (this?.props?.customRowClassName && this?.props?.customRowClassName(record)) {
+              return `rowClassName ${this.props.customRowClassName(record)}`;
+            } else {
+              return index % 2 === 0
+                ? "rowClassName table-row-light"
+                : "rowClassName table-row-dark";
+            }
+          }}
         />
       </div>
     );

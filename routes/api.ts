@@ -58,6 +58,12 @@ Route.group(() => {
     ])
     // ---------------------------------- End Role Routes -----------------------------------//
 
+    // ---------------------------------- Cinema Routes ---------------------------------------//
+    Route.resource("/cinemas", "CinemaController").name('cinemas').middleware([
+      permissionResource(['cinemas'])
+    ])
+    // ---------------------------------- End Cinema Routes -----------------------------------//
+
     // ---------------------------------- End Routes -----------------------------------//
   }).middleware([AuthApiMiddleware])
 }).middleware([ExtendMiddleware]).name('api').prefix("/api/v1")

@@ -20,12 +20,13 @@ export default class AdminController extends BaseController {
     let project = [
       "users.id as id",
       "users.username",
-      "users.firstName",
-      "users.lastName",
+      "users.name",
       "users.email",
+      "users.phoneNumber",
+      "users.birthday",
       "users.roleId",
       "users.createdAt",
-      "roles.name as roleName"
+      "roles.name as role"
     ]
 
     let result = await this.Model.query()
@@ -40,12 +41,13 @@ export default class AdminController extends BaseController {
     const { auth } = this.request
     let inputs = this.request.all()
     const allowFields = {
-      firstName: "string!",
-      lastName: "string!",
+      name: "string!",
       username: "string!",
       password: "string!",
       roleId: "number!",
-      email: "string!"
+      email: "string!",
+      phoneNumber: "string!",
+      birthday: "string!"
     }
 
     let params = this.validate(inputs, allowFields, { removeNotAllow: true });
@@ -66,7 +68,6 @@ export default class AdminController extends BaseController {
     params = {
       ...params,
       roleId: role.id,
-      createdBy: auth.id
     }
 
     const templateKey = "createUser"
@@ -92,9 +93,10 @@ export default class AdminController extends BaseController {
     let inputs = this.request.all()
     const allowFields = {
       id: "number!",
-      firstName: "string!",
-      lastName: "string!",
-      email: "string!"
+      name: "string!",
+      email: "string!",
+      phoneNumber: "string!",
+      birthday: "string!"
     }
     let params = this.validate(inputs, allowFields, { removeNotAllow: true });
 
@@ -280,5 +282,17 @@ export default class AdminController extends BaseController {
     if (!result) throw new ApiException(6006, "User doesn't exist")
 
     return result
+  }
+
+  async detail() {
+    const { id } = this.request.all();
+    let result = await this.Model.query()
+      .leftJoin('roles', 'users.roleId', 'roles.id')
+      .select('users.*', 'roles.name as role')
+      .where('users.id', id)
+      .first();
+    if (result) delete result['password'];
+    if (!result) throw new ApiException(6006, "User doesn't exist");
+    return result;
   }
 }

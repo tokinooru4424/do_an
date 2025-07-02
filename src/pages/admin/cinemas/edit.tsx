@@ -3,7 +3,6 @@ import dynamic from 'next/dynamic';
 import { Button, Form, Col, Row, Spin } from 'antd';
 import { LeftCircleFilled, SaveFilled, DeleteFilled } from '@ant-design/icons';
 import to from 'await-to-js'
-import moment from "moment";
 
 import auth from '@src/helpers/auth'
 import { confirmDialog } from '@src/helpers/dialogs'
@@ -11,21 +10,21 @@ import { confirmDialog } from '@src/helpers/dialogs'
 import useBaseHook from '@src/hooks/BaseHook'
 import usePermissionHook from "@src/hooks/PermissionHook";
 
-import UserForm from '@src/components/Admin/Users/UserForm';
-import userService from '@root/src/services/userService';
+import CinemaForm from '@src/components/Admin/Cinemas/CinemaForm';
+import cinemaService from '@root/src/services/cinemaService';
 
 const Layout = dynamic(() => import('@src/layouts/Admin'), { ssr: false })
 
 const Edit = () => {
   const { t, notify, redirect, router } = useBaseHook();
   const [loading, setLoading] = useState(false);
-  const [admin, setAdmin]: any[] = useState<User>();
+  const [cinema, setCinema]: any[] = useState<Cinema>();
   const [form] = Form.useForm();
   const { checkPermission } = usePermissionHook();
   const { query } = router
   const deletePer = checkPermission({
-    "users": "D"
-  }) && auth().user.id != query.id
+    "cinemas": "D"
+  })
 
   const fetchData = async () => {
     let idError: any = null;
@@ -38,10 +37,10 @@ const Edit = () => {
 
     if (idError) return notify(t(`errors:${idError.code}`), '', 'error')
 
-    let [adminError, admin]: [any, User] = await to(userService().withAuth().detail({ id: query.id }));
-    if (adminError) return notify(t(`errors:${adminError.code}`), '', 'error')
+    let [cinemaError, cinema]: [any, Cinema] = await to(cinemaService().withAuth().detail({ id: query.id }));
+    if (cinemaError) return notify(t(`errors:${cinemaError.code}`), '', 'error')
 
-    setAdmin(admin)
+    setCinema(cinema)
   }
 
   useEffect(() => {
@@ -52,8 +51,8 @@ const Edit = () => {
   const onFinish = async (values: any): Promise<void> => {
     setLoading(true)
 
-    let [error, result]: any[] = await to(userService().withAuth().edit({
-      id: admin.id,
+    let [error, result]: any[] = await to(cinemaService().withAuth().edit({
+      id: cinema.id,
       ...values
     }));
 
@@ -61,44 +60,43 @@ const Edit = () => {
 
     if (error) return notify(t(`errors:${error.code}`), '', 'error')
 
-    notify(t("messages:message.recordUserUpdated"))
-    redirect("frontend.admin.users.index")
+    notify(t("messages:message.recordCinemaUpdated"))
+    redirect("frontend.admin.cinemas.index")
 
     return result
   }
 
   const onDelete = async (): Promise<void> => {
-    let [error, result]: any[] = await to(userService().withAuth().destroy({ id: admin.id }));
+    let [error, result]: any[] = await to(cinemaService().withAuth().destroy({ id: cinema.id }));
     if (error) return notify(t(`errors:${error.code}`), '', 'error')
 
-    notify(t('messages:message.recordUserDeleted'))
-    redirect("frontend.admin.users.index")
+    notify(t('messages:message.recordCinemaDeleted'))
+    redirect("frontend.admin.cinemas.index")
 
     return result
   }
 
-  if (!admin) return <div className="content"><Spin /></div>
+  if (!cinema) return <div className="content"><Spin /></div>
 
   return <>
     <div className="content">
       <Form
         form={form}
         layout="vertical"
-        name="editAdmin"
+        name="editCinema"
         initialValues={{
-          name: admin.name,
-          username: admin.username,
-          email: admin.email,
-          roleId: admin.roleId,
-          birthday: admin.birthday ? moment(admin.birthday) : null,
-          phoneNumber: admin.phoneNumber
+          name: cinema.name,
+          email: cinema.email,
+          phoneNumber: cinema.phoneNumber,
+          address: cinema.address,
+          description: cinema.description
         }}
         onFinish={onFinish}
         scrollToFirstError
       >
         <Row>
           <Col md={{ span: 16, offset: 4 }}>
-            <UserForm form={form} isEdit={true} />
+            <CinemaForm form={form} isEdit={true} />
             <Form.Item wrapperCol={{ span: 24 }} className="text-center">
               <Button onClick={() => router.back()} className="btn-margin-right">
                 <LeftCircleFilled /> {t('buttons:back')}
@@ -128,14 +126,14 @@ const Edit = () => {
 Edit.Layout = (props) => {
   const { t } = useBaseHook();
   return <Layout
-    title={t("pages:users.edit.title")}
-    description={t("pages:users.edit.description")}
+    title={t("pages:cinemas.edit.title")}
+    description={t("pages:cinemas.edit.description")}
     {...props}
   />
 }
 
 Edit.permissions = {
-  "users": "U"
+  "cinemas": "U"
 }
 
 export default Edit

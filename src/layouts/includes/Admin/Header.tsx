@@ -16,7 +16,7 @@ const AdminHeader = (props: any) => {
   const [showChangePassword, setShowChangePassword] = useState(false);
 
   const renderMenuItem = () => {
-    const firstName = getData(auth(), "user.firstName", "User");
+    const firstName = getData(auth(), "user.name", "User");
     const username = getData(auth(), "user.username", "User");
 
     return [

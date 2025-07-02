@@ -8,6 +8,7 @@
         "title": "Quản lý tài khoản",
         "index": "Danh sách tài khoản",
         "edit": "Chỉnh sửa tài khoản",
+        "view": "Thông tin tài khoản",
         "create": "Tạo tài khoản",
         "twofa": "Cài đặt 2FA",
         "upload": "Tải lên danh sách tài khoản"
@@ -20,6 +21,13 @@
       },
       "settings": {
         "index": "Cài đặt"
+      },
+      "cinemas": {
+        "title": "Quản lý rạp phim",
+        "index": "Danh sách rạp phim",
+        "edit": "Chỉnh sửa rạp phim",
+        "view": "Thông tin rạp phim",
+        "create": "Tạo rạp phim"
       }
     }
   }

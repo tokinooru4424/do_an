@@ -14,6 +14,7 @@ class UserModel extends BaseModel {
   roleId: number;
   name: string;
   email: string;
+  phoneNumber: string;
   birthday: Date;
   createdAt: Date;
   updatedAt: Date;

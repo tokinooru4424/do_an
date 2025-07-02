@@ -5,6 +5,7 @@ interface User {
   username: string;
   email: string;
   roleId: number;
+  phoneNumber: string;
   createdAt: Date;
 }
 
@@ -15,6 +16,17 @@ interface Role {
   parentId: number;
   key: string;
   createdAt: Date;
+}
+
+interface Cinema {
+  id: number;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  address: string;
+  description: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface FilterParam {

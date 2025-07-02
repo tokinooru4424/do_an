@@ -41,73 +41,57 @@
     "deleteAllConfirm": "Bạn có muốn xóa tất cả bản ghi không?",
     "notSelectStep": "Bạn cần chọn bước trước!",
     "notFoundStep": "Không tìm thấy bước đã chọn. Mời bạn chọn lại!",
-
     "recordCreated": "Tạo mới dữ liệu thành công!",
     "recordUpdated": "Cập nhật dữ liệu thành công!",
     "recordDeleted": "Xóa dữ liệu thành công!",
     "deleteConfirm": "Bạn có chắc chắn muốn xóa dữ liệu không?",
     "confirmRole": "Bạn có chắc chắn gỡ vai trò này đến {{ email }}",
-
     "recordRoleGroupCreated": "The account group has been added successfully!",
     "recordRoleGroupUpdated": "The account group has been updated successfully!",
     "recordRoleGroupDeleted": "The account group has been deleted successfully!",
-
     "recordGroupCreated": "The group has been added successfully!",
     "recordGroupUpdated": "The group has been updated successfully!",
     "recordGroupDeleted": "The group has been deleted successfully!",
-
     "recordRoleCreated": "The role has updated successfully!",
-
     "recordBotRoleCreated": "Tạo vai trò trên bot thành công!",
     "recordBotRoleUpdated": "Chỉnh sửa vai trò trên bot thành công!",
     "recordBotRoleDeleted": "Gỡ vai trò trên bot thành công!",
-
     "recordUserCreated": "Tạo mới người dùng thành công!",
     "recordUserUpdated": "Cập nhật người dùng thành công!",
     "recordUserDeleted": "Xóa người dùng thành công!",
-
     "recordBotCreated": "Tạo mới bot thành công!",
     "recordBotUpdated": "Cập nhật bot thành công!",
     "recordBotDeleted": "Xóa bot thành công!",
     "notFoundBot": "Không tìm thấy bot! Vui lòng thử lại sau!",
-
     "recordEntityCreated": "Tạo mới thực thể thành công!",
     "recordEntityUpdated": "Cập nhật thực thể thành công!",
     "recordEntityDeleted": "Xóa thực thể thành công!",
-
     "recordIntentCreated": "Tạo mới ý định thành công!",
     "recordIntentUpdated": "Cập nhật ý định thành công!",
     "recordIntentDeleted": "Xóa ý định thành công!",
-
     "recordTagCreated": "Tạo mới từ khóa thành công!",
     "recordTagUpdated": "Cập nhật từ khóa thành công!",
     "recordTagDeleted": "Xóa từ khóa thành công!",
-
     "recordSampleSentencesCreated": "Câu mẫu đã được tạo thành công!",
     "recordSampleSentencesUpdated": "Câu mẫu đã được cập nhật thành công!",
     "recordSampleSentencesDeleted": "Câu mẫu đã được xoá thành công!",
-
     "recordStoriesDeleted": "Xoá kịch bản thành công!",
     "recordStoriesCreated": "Tạo kịch bản mới thành công!",
     "recordStoriesUpdated": "Chỉnh sửa kịch bản thành công!",
-
     "recordResponsesCreated": "Tạo bước cho kịch bản thành công!",
     "recordResponsesUpdated": "Cập nhật bước cho kịch bản thành công!",
     "recordResponsesDeleted": "Xoá bước thành công!",
-
     "recordQnADeleted": "Xoá câu hỏi thành công!",
     "recordQnACreated": "Tạo câu hỏi thành công!",
     "recordQnAUpdated": "Cập nhật câu hỏi thành công!",
-
     "recordHistoriesMessageUpdated": "Cập nhật thành công!!",
     "recordHistoriesMessageCr": "Tạo mới thành công!!",
-
-    
     "uploadQnASuccess": "Tải file Q&A thành công!",
-
     "uploadExcelSuccess": "Tải lên file excel thành công!",
-
-    "enable2FaSuccess": "2FA has been installed successfully. You will need to re-login to continue."
+    "enable2FaSuccess": "2FA has been installed successfully. You will need to re-login to continue.",
+    "recordCinemaCreated": "Tạo mới rạp chiếu phim thành công!",
+    "recordCinemaUpdated": "Cập nhật rạp chiếu phim thành công!",
+    "recordCinemaDeleted": "Xóa rạp chiếu phim thành công!"
   },
   "confirm": {
     "title": "Xác nhận",
