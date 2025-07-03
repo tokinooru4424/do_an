@@ -3,6 +3,7 @@ import useBaseHook from "@src/hooks/BaseHook";
 import usePermissionHook from "@src/hooks/PermissionHook";
 import dynamic from "next/dynamic";
 import moment from "moment";
+import useSWR from "swr";
 
 import { GridTable } from "@src/components/Table";
 import { Button, ConfigProvider, Space, Tooltip } from "antd";
@@ -12,11 +13,13 @@ import { formatDate } from '@src/helpers/utils'
 
 
 import FilterDatePicker from "@src/components/Table/SearchComponents/DatePicker";
-import cinemaService from "@root/src/services/cinemaService";
-
+import hallService from "@root/src/services/hallService";
 import to from "await-to-js";
 import auth from "@src/helpers/auth";
 import _ from "lodash";
+import constant from 'config/constant';
+import FilterDropdown from "@src/components/Table/SearchComponents/Dropdown";
+import cinemaService from "@root/src/services/cinemaService";
 
 const Layout = dynamic(() => import("@src/layouts/Admin"), { ssr: false });
 
@@ -30,58 +33,88 @@ const Index = () => {
 
   const { checkPermission } = usePermissionHook();
   const createPer = checkPermission({
-    cinemas: "C",
+    halls: "C",
   });
   const updatePer = checkPermission({
-    cinemas: "U",
+    halls: "U",
   });
   const deletePer = checkPermission({
-    cinemas: "D",
+    halls: "D",
   });
   const viewPer = checkPermission({
-    cinemas: "R"
+    halls: "R"
   });
 
   const columns = [
     {
-      title: t("pages:cinemas.table.name"),
+      title: t("pages:halls.table.name"),
       dataIndex: "name",
-      key: "cinemas.name",
+      key: "halls.name",
       sorter: true,
       filterable: true,
     },
     {
-      title: t("pages:cinemas.table.email"),
-      dataIndex: "email",
-      key: "cinemas.email",
+      title: t("pages:halls.table.cinema"),
+      dataIndex: "cinemaName",
+      key: "cinema.name",
       sorter: true,
       filterable: true,
+      renderFilter: ({ column, confirm, ref }: FilterParam) => {
+        const { data: dataC } = useSWR("cinemaData", () =>
+          cinemaService().withAuth().select2({ pageSize: -1 })
+        );
+        const cinemas = getData(dataC, "data", []);
+        const cinemaOptions = cinemas?.map((cinema: { label: string; value: number }) => ({
+          label: cinema.label,
+          value: cinema.label,
+        })) ?? [];
+        return (
+          <FilterDropdown
+            column={column}
+            confirm={confirm}
+            ref={ref}
+            mode="multiple"
+            options={cinemaOptions}
+            placeholder="Chọn rạp chiếu"
+          />
+        );
+      },
     },
     {
-      title: t("pages:cinemas.table.phoneNumber"),
-      dataIndex: "phoneNumber",
-      key: "cinemas.phoneNumber",
-      sorter: true,
-      filterable: true,
-    },
-    {
-      title: t("pages:cinemas.table.address"),
-      dataIndex: "address",
-      key: "cinemas.address",
-      sorter: true,
-      filterable: true,
-    },
-    {
-      title: t("pages:cinemas.table.description"),
+      title: t("pages:halls.table.description"),
       dataIndex: "description",
-      key: "cinemas.description",
+      key: "halls.description",
       sorter: true,
       filterable: true,
     },
     {
-      title: t("pages:cinemas.table.createdAt"),
+      title: t("pages:halls.table.format"),
+      dataIndex: "format",
+      key: "halls.format",
+      sorter: true,
+      filterable: true,
+      render: (text: number) => constant.hallFormat?.[text?.toString()] || text,
+      renderFilter: ({ column, confirm, ref }: FilterParam) => {
+        const formatOptions = Object.entries(constant.hallFormat).map(([key, value]) => ({
+          label: value,
+          value: Number(key),
+        }));
+        return (
+          <FilterDropdown
+            column={column}
+            confirm={confirm}
+            ref={ref}
+            mode="multiple"
+            options={formatOptions}
+            placeholder="Chọn định dạng"
+          />
+        );
+      },
+    },
+    {
+      title: t("pages:halls.table.createdAt"),
       dataIndex: "createdAt",
-      key: "cinemas.createdAt",
+      key: "halls.createdAt",
       sorter: true,
       filterable: true,
       render: (text: Date, record: any) => formatDate(text),
@@ -90,11 +123,11 @@ const Index = () => {
       ),
     },
     {
-      title: t("pages:cinemas.table.actions"),
+      title: t("pages:halls.table.actions"),
       key: "actions",
       fixed: "right",
       width: 120,
-      render: (text: string, record: Cinema) => (
+      render: (text: string, record: Hall) => (
         <ConfigProvider
           theme={{
             components: {
@@ -119,7 +152,7 @@ const Index = () => {
                   color: '#1890ff',
                   borderColor: '#1890ff'
                 }}
-                onClick={() => redirect("frontend.admin.cinemas.view", { id: record.id })}
+                onClick={() => redirect("frontend.admin.halls.view", { id: record.id })}
                 hidden={!viewPer}
               />
             </Tooltip>
@@ -133,7 +166,7 @@ const Index = () => {
                   color: '#52c41a',
                   borderColor: '#52c41a'
                 }}
-                onClick={() => redirect("frontend.admin.cinemas.edit", { id: record.id })}
+                onClick={() => redirect("frontend.admin.halls.edit", { id: record.id })}
                 hidden={!updatePer}
               />
             </Tooltip>
@@ -150,10 +183,10 @@ const Index = () => {
                     content: t("messages:message.deleteConfirm"),
                     onOk: async () => {
                       let [error, result]: any[] = await to(
-                        cinemaService().withAuth().destroy({ id: record.id })
+                        hallService().withAuth().destroy({ id: record.id })
                       );
                       if (error) return notify(t(`errors:${error.code}`), "", "error");
-                      notify(t("messages:message.recordCinemaDeleted"));
+                      notify(t("messages:message.recordHallDeleted"));
                       if (tableRef.current !== null) {
                         tableRef.current.reload();
                       }
@@ -178,12 +211,12 @@ const Index = () => {
 
   const fetchData = async (values: any) => {
     if (!values.sorting.length) {
-      values.sorting = [{ field: "cinemas.id", direction: "desc" }];
+      values.sorting = [{ field: "halls.id", direction: "desc" }];
     }
     setCacheFilter(values)
 
-    let [error, cinemas]: [any, any[]] = await to(
-      cinemaService().withAuth().index(values)
+    let [error, halls]: [any, any[]] = await to(
+      hallService().withAuth().index(values)
     );
     if (error) {
       const { code, message } = error;
@@ -191,16 +224,16 @@ const Index = () => {
       return {};
     }
 
-    return cinemas;
+    return halls;
   };
 
   const onDelete = async () => {
     let [error, result]: any[] = await to(
-      cinemaService().withAuth().delete({ ids: selectedIds })
+      hallService().withAuth().delete({ ids: selectedIds })
     );
 
     if (error) return notify(t(`errors:${error.code}`), "", "error");
-    notify(t("messages:message.recordCinemaDeleted"));
+    notify(t("messages:message.recordHallDeleted"));
 
     if (tableRef.current !== null) {
       tableRef.current.reload();
@@ -222,7 +255,7 @@ const Index = () => {
     <div className="content">
       <Button
         hidden={!createPer}
-        onClick={() => redirect("frontend.admin.cinemas.create")}
+        onClick={() => redirect("frontend.admin.halls.create")}
         type="primary"
         className="btn-top"
       >
@@ -266,15 +299,15 @@ Index.Layout = (props) => {
 
   return (
     <Layout
-      title={t("pages:cinemas.index.title")}
-      description={t("pages:cinemas.index.description")}
+      title={t("pages:halls.index.title")}
+      description={t("pages:halls.index.description")}
       {...props}
     />
   );
 };
 
 Index.permissions = {
-  "cinemas": "R",
+  "halls": "R",
 };
 
 export default Index;

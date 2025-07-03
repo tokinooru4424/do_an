@@ -42,7 +42,9 @@ class Route {
 
     try {
       if (!controllers[controllerName]) {
-        controllers[controllerName] = require(`@app/Controllers/${controllerName}`).default;
+        const mod = require(`@app/Controllers/${controllerName}`);
+        console.log('[Route] Loaded controller:', controllerName, mod);
+        controllers[controllerName] = mod.default || mod;
       }
 
       let controller = new controllers[controllerName]();

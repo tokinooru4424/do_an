@@ -13,6 +13,7 @@ class FilterDropdown extends React.Component<any, any> {
   componentDidUpdate(prevProps) {
     if (JSON.stringify(prevProps.column.filteredValue) != JSON.stringify(this.props.column.filteredValue)) {
       let values = _.get(this.props.column, "filteredValue[0].value", [])
+      if (!values.length) values = _.get(this.props.column, "defaultFilteredValue.value", [])
       this.setState({
         values: values
       })
@@ -51,15 +52,16 @@ class FilterDropdown extends React.Component<any, any> {
 
   render() {
     const { confirm, column, options, searchBtnText, clearBtnText, ...otherProps } = this.props
+    let values = this.state.values.map(i => !isNaN(parseInt(i)) ? Number(i) : i)
     return <div style={{ padding: 8 }}>
       <Select
         mode="multiple"
         {...otherProps}
         allowClear={true}
         ref={ref => this.refInput = ref}
-        value={this.state.values}
+        value={values}
         onChange={this.onChange}
-        //onBlur={this.onSubmit}
+        onBlur={this.onSubmit}
         optionFilterProp="label"
         style={{ width: '250px', marginBottom: 8, display: "block" }}
         defaultValue={[]}

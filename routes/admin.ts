@@ -40,4 +40,31 @@ Route.group(() => {
     Route.get(`/${name}/:id/view`, `pages/admin/${name}/view`).name(`${name}.view`).parent(`${name}.index`).sidebar(`${name}.index`);
   }
 
+  {
+    let name = 'halls'
+    Route.get(`/${name}`, `pages/admin/${name}`).name(`${name}.index`).sidebar(`${name}.index`)
+    Route.get(`/${name}/create`, `pages/admin/${name}/create`).name(`${name}.create`).parent(`${name}.index`).sidebar(`${name}.index`)
+    Route.get(`/${name}/:id/edit`, `pages/admin/${name}/edit`).name(`${name}.edit`).parent(`${name}.index`).sidebar(`${name}.index`)
+    Route.get(`/${name}/twofa`, `pages/admin/${name}/twoFa`).name(`${name}.twofa`).parent(`${name}.index`).sidebar(`${name}.twoindexfa`)
+    Route.get(`/${name}/:id/view`, `pages/admin/${name}/view`).name(`${name}.view`).parent(`${name}.index`).sidebar(`${name}.index`);
+  }
+
+  {
+    let name = 'showTimes'
+    Route.get(`/${name}`, `pages/admin/${name}`).name(`${name}.index`).sidebar(`${name}.index`)
+    Route.get(`/${name}/create`, `pages/admin/${name}/create`).name(`${name}.create`).parent(`${name}.index`).sidebar(`${name}.index`)
+    Route.get(`/${name}/:id/edit`, `pages/admin/${name}/edit`).name(`${name}.edit`).parent(`${name}.index`).sidebar(`${name}.index`)
+    Route.get(`/${name}/twofa`, `pages/admin/${name}/twoFa`).name(`${name}.twofa`).parent(`${name}.index`).sidebar(`${name}.twoindexfa`)
+    Route.get(`/${name}/:id/view`, `pages/admin/${name}/view`).name(`${name}.view`).parent(`${name}.index`).sidebar(`${name}.index`);
+  }
+
+  {
+    let name = 'movies'
+    Route.get(`/${name}`, `pages/admin/${name}`).name(`${name}.index`).sidebar(`${name}.index`)
+    Route.get(`/${name}/create`, `pages/admin/${name}/create`).name(`${name}.create`).parent(`${name}.index`).sidebar(`${name}.index`)
+    Route.get(`/${name}/:id/edit`, `pages/admin/${name}/edit`).name(`${name}.edit`).parent(`${name}.index`).sidebar(`${name}.index`)
+    Route.get(`/${name}/twofa`, `pages/admin/${name}/twoFa`).name(`${name}.twofa`).parent(`${name}.index`).sidebar(`${name}.twoindexfa`)
+    Route.get(`/${name}/:id/view`, `pages/admin/${name}/view`).name(`${name}.view`).parent(`${name}.index`).sidebar(`${name}.index`);
+  }
+
 }).name("frontend.admin").prefix("/admin").middleware([AuthAdminMiddleware])

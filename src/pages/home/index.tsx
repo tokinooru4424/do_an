@@ -9,6 +9,9 @@ import RegisterModal from '@src/components/Auth/RegisterModal';
 import LoginModal from '@src/components/Auth/LoginModal';
 import ForgotPasswordModal from '@src/components/Auth/ForgotPasswordModal';
 import auth from '@src/helpers/auth';
+import movieService from '@src/services/movieService';
+import useSWR from 'swr';
+import constant from 'config/constant';
 
 const { Header, Content, Footer } = Layout;
 
@@ -43,6 +46,13 @@ const Home = () => {
             router.events.off('routeChangeComplete', handleRouteChange);
         };
     }, [router.events]);
+
+    useEffect(() => {
+        fetch('http://localhost:3333/api/v1/movies')
+            .then(res => res.json())
+            .then(data => console.log('Test fetch:', data))
+            .catch(err => console.error('Test fetch error:', err));
+    }, []);
 
     const showRegisterModal = () => {
         setIsRegisterModalVisible(true);
@@ -99,49 +109,6 @@ const Home = () => {
             </Menu.Item>
         </Menu>
     );
-
-    const movies = [
-        {
-            id: 1,
-            title: 'PHIM ĐIỆN ẢNH DORAEMON: NOBITA VÀ CUỘC PHIÊU LƯU VÀO THẾ GIỚI TRONG TRANH',
-            poster: 'https://via.placeholder.com/300x450?text=Doraemon',
-            ageRating: 'P',
-            duration: '105 phút',
-            genre: 'Hoạt hình 2D',
-            country: 'Nhật Bản',
-            releaseDate: '23/05/2025'
-        },
-        {
-            id: 2,
-            title: 'UNTIL DAWN: BÍ MẬT KINH HOÀNG',
-            poster: 'https://via.placeholder.com/300x450?text=Until+Dawn',
-            ageRating: 'T18',
-            duration: '104 phút',
-            genre: 'Kinh dị 2D',
-            country: 'Mỹ',
-            releaseDate: '16/05/2025'
-        },
-        {
-            id: 3,
-            title: 'YADANG: BA MẶT LẬT KÈO',
-            poster: 'https://via.placeholder.com/300x450?text=Yadang',
-            ageRating: 'T18',
-            duration: '122 phút',
-            genre: 'Hành động 2D',
-            country: 'Hàn Quốc',
-            releaseDate: '23/05/2025'
-        },
-        {
-            id: 4,
-            title: 'MA MÓC HỌNG',
-            poster: 'https://via.placeholder.com/300x450?text=Ma+Moc+Hong',
-            ageRating: 'T16',
-            duration: '110 phút',
-            genre: 'Kinh dị',
-            country: 'Việt Nam',
-            releaseDate: '23/05/2025'
-        }
-    ];
 
     const upcomingMovies = [
         {
@@ -207,6 +174,18 @@ const Home = () => {
         }
     ];
 
+    const { data: movieData, error: movieError } = useSWR(
+        'movies',
+        () => movieService().index({}),
+        { shouldRetryOnError: false }
+    );
+    const movies = movieData?.data?.filter(movie => movie.status == 1) || [];
+
+    console.log('movieData:', movieData);
+    console.log('movies:', movies);
+    console.log('movieError:', movieError);
+    console.log('movies after filter:', movies);
+
     return (
         <Layout>
             <Header className={`${styles.header} ${isScrolled ? styles.blur : ''}`}>
@@ -266,15 +245,38 @@ const Home = () => {
                 <div className={styles.container}>
                     <div className={styles.banner}>
                         <Carousel autoplay>
-                            <div>
-                                <img src="https://www.themoviedb.org/t/p/original/qWnmJb0gV4r6oJd7K8eZk8V0y4V.jpg" alt="Fake Movie Banner 1" />
-                            </div>
-                            <div>
-                                <img src="https://www.themoviedb.org/t/p/original/xS32JdFKs2QYjKVAaL9sN4TgcG2.jpg" alt="Fake Movie Banner 2" />
-                            </div>
-                            <div>
-                                <img src="https://www.themoviedb.org/t/p/original/vPZsdp3Zg8NfIuU8N10F3K1Xm0z.jpg" alt="Fake Movie Banner 3" />
-                            </div>
+                            {movies.length > 0 ? (
+                                movies.map((movie) => (
+                                    <div key={movie.id}>
+                                        <img
+                                            src={movie.banner
+                                                ? `${process.env.NEXT_PUBLIC_API_HOST || 'http://localhost:3333'}${movie.banner}`
+                                                : movie.image
+                                                    ? `${process.env.NEXT_PUBLIC_API_HOST || 'http://localhost:3333'}${movie.image}`
+                                                    : '/no-image.png'}
+                                            alt={movie.title}
+                                            style={{
+                                                width: '100%',
+                                                height: '400px',
+                                                objectFit: 'cover',
+                                                borderRadius: '8px'
+                                            }}
+                                        />
+                                    </div>
+                                ))
+                            ) : (
+                                <>
+                                    <div>
+                                        <img src="https://www.themoviedb.org/t/p/original/qWnmJb0gV4r6oJd7K8eZk8V0y4V.jpg" alt="Fake Movie Banner 1" style={{ width: '100%', height: '400px', objectFit: 'cover', borderRadius: '8px' }} />
+                                    </div>
+                                    <div>
+                                        <img src="https://www.themoviedb.org/t/p/original/xS32JdFKs2QYjKVAaL9sN4TgcG2.jpg" alt="Fake Movie Banner 2" style={{ width: '100%', height: '400px', objectFit: 'cover', borderRadius: '8px' }} />
+                                    </div>
+                                    <div>
+                                        <img src="https://www.themoviedb.org/t/p/original/vPZsdp3Zg8NfIuU8N10F3K1Xm0z.jpg" alt="Fake Movie Banner 3" style={{ width: '100%', height: '400px', objectFit: 'cover', borderRadius: '8px' }} />
+                                    </div>
+                                </>
+                            )}
                         </Carousel>
                     </div>
 
@@ -286,23 +288,15 @@ const Home = () => {
                             </span>
                         </div>
                         <div className={styles.movieGrid}>
+                            {movies.length === 0 && <p>Không có phim đang chiếu.</p>}
                             {movies.map(movie => (
                                 <div key={movie.id} className={styles.movieCard}>
-                                    <div className={styles.poster}>
-                                        <img src={movie.poster} alt={movie.title} />
-                                        <span className={styles.ageRating}>{movie.ageRating}</span>
+                                    <img className={styles.poster} src={movie.image ? `${process.env.NEXT_PUBLIC_API_HOST || 'http://localhost:3333'}${movie.image}` : '/no-image.png'} alt={movie.title} />
+                                    <div className={styles.metaTop}>
+                                        <span className={styles.genre}>{movie.genre}</span>
+                                        <span className={styles.releaseDate}>{movie.realeaseDate ? new Date(movie.realeaseDate).toLocaleDateString('vi-VN') : ''}</span>
                                     </div>
-                                    <div className={styles.info}>
-                                        <h3 className={styles.title}>{movie.title}</h3>
-                                        <div className={styles.meta}>
-                                            <p>{movie.genre} • {movie.duration}</p>
-                                            <p>{movie.country}</p>
-                                            <p>Khởi chiếu: {movie.releaseDate}</p>
-                                        </div>
-                                        <Button type="primary" className={styles.button}>
-                                            Mua vé ngay
-                                        </Button>
-                                    </div>
+                                    <div className={styles.title}>{movie.title?.toUpperCase()}</div>
                                 </div>
                             ))}
                         </div>

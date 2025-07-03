@@ -3,6 +3,7 @@ import useBaseHook from "@src/hooks/BaseHook";
 import usePermissionHook from "@src/hooks/PermissionHook";
 import dynamic from "next/dynamic";
 import moment from "moment";
+import useSWR from "swr";
 
 import { GridTable } from "@src/components/Table";
 import { Button, ConfigProvider, Space, Tooltip } from "antd";
@@ -12,11 +13,15 @@ import { formatDate } from '@src/helpers/utils'
 
 
 import FilterDatePicker from "@src/components/Table/SearchComponents/DatePicker";
-import cinemaService from "@root/src/services/cinemaService";
-
+import hallService from "@root/src/services/hallService";
 import to from "await-to-js";
 import auth from "@src/helpers/auth";
 import _ from "lodash";
+import FilterDropdown from "@src/components/Table/SearchComponents/Dropdown";
+import cinemaService from "@root/src/services/cinemaService";
+import showTimeService from "@root/src/services/showTimeService";
+import constant from 'config/constant';
+import movieService from '@root/src/services/movieService';
 
 const Layout = dynamic(() => import("@src/layouts/Admin"), { ssr: false });
 
@@ -30,71 +35,105 @@ const Index = () => {
 
   const { checkPermission } = usePermissionHook();
   const createPer = checkPermission({
-    cinemas: "C",
+    showTimess: "C",
   });
   const updatePer = checkPermission({
-    cinemas: "U",
+    showTimess: "U",
   });
   const deletePer = checkPermission({
-    cinemas: "D",
+    showTimess: "D",
   });
   const viewPer = checkPermission({
-    cinemas: "R"
+    showTimess: "R"
   });
+
+  const { data: dataM } = useSWR('movieData', () =>
+    movieService().withAuth().select2({ pageSize: -1 })
+  );
+  const movies = dataM?.data || [];
+  const { data: dataH } = useSWR('hallData', () =>
+    hallService().withAuth().select2({ pageSize: -1 })
+  );
+  const halls = dataH?.data || [];
 
   const columns = [
     {
-      title: t("pages:cinemas.table.name"),
-      dataIndex: "name",
-      key: "cinemas.name",
+      title: t("pages:showTimes.table.movie"),
+      dataIndex: "movieName",
+      key: "movie.title",
       sorter: true,
       filterable: true,
+      render: (movieId: number) => movies.find((m: any) => m.value === movieId)?.label || movieId,
     },
     {
-      title: t("pages:cinemas.table.email"),
-      dataIndex: "email",
-      key: "cinemas.email",
+      title: t("pages:showTimes.table.hall"),
+      dataIndex: "hallName",
+      key: "hall.name",
       sorter: true,
       filterable: true,
+      render: (hallId: number) => halls.find((h: any) => h.value === hallId)?.label || hallId,
     },
     {
-      title: t("pages:cinemas.table.phoneNumber"),
-      dataIndex: "phoneNumber",
-      key: "cinemas.phoneNumber",
+      title: t("pages:showTimes.table.startTime"),
+      dataIndex: "startTime",
+      key: "showTimes.startTime",
       sorter: true,
       filterable: true,
-    },
-    {
-      title: t("pages:cinemas.table.address"),
-      dataIndex: "address",
-      key: "cinemas.address",
-      sorter: true,
-      filterable: true,
-    },
-    {
-      title: t("pages:cinemas.table.description"),
-      dataIndex: "description",
-      key: "cinemas.description",
-      sorter: true,
-      filterable: true,
-    },
-    {
-      title: t("pages:cinemas.table.createdAt"),
-      dataIndex: "createdAt",
-      key: "cinemas.createdAt",
-      sorter: true,
-      filterable: true,
-      render: (text: Date, record: any) => formatDate(text),
+      render: (text: Date) => text ? moment(text).format("DD/MM/YYYY HH:mm") : "",
       renderFilter: ({ column, confirm, ref }: FilterParam) => (
         <FilterDatePicker column={column} confirm={confirm} ref={ref} style={{ width: '100%' }} format="DD/MM/YYYY" />
       ),
     },
     {
-      title: t("pages:cinemas.table.actions"),
+      title: t("pages:showTimes.table.endTime"),
+      dataIndex: "endTime",
+      key: "showTimes.endTime",
+      sorter: true,
+      filterable: true,
+      render: (text: Date) => text ? moment(text).format("DD/MM/YYYY HH:mm") : "",
+      renderFilter: ({ column, confirm, ref }: FilterParam) => (
+        <FilterDatePicker column={column} confirm={confirm} ref={ref} style={{ width: '100%' }} format="DD/MM/YYYY" />
+      ),
+    },
+    {
+      title: t("pages:showTimes.table.format"),
+      dataIndex: "format",
+      key: "showTimes.format",
+      sorter: true,
+      filterable: true,
+      render: (format: number) => constant.hallFormat?.[format?.toString()] || format,
+    },
+    {
+      title: t("pages:showTimes.table.language"),
+      dataIndex: "language",
+      key: "showTimes.language",
+      sorter: true,
+      filterable: true,
+    },
+    {
+      title: t("pages:showTimes.table.subtitle"),
+      dataIndex: "subtitle",
+      key: "showTimes.subtitle",
+      sorter: true,
+      filterable: true,
+    },
+    {
+      title: t("pages:showTimes.table.createdAt"),
+      dataIndex: "createdAt",
+      key: "showTimes.createdAt",
+      sorter: true,
+      filterable: true,
+      render: (text: Date) => text ? moment(text).format("DD/MM/YYYY HH:mm") : "",
+      renderFilter: ({ column, confirm, ref }: FilterParam) => (
+        <FilterDatePicker column={column} confirm={confirm} ref={ref} style={{ width: '100%' }} format="DD/MM/YYYY" />
+      ),
+    },
+    {
+      title: t("pages:showTimes.table.actions"),
       key: "actions",
       fixed: "right",
       width: 120,
-      render: (text: string, record: Cinema) => (
+      render: (text: string, record: Hall) => (
         <ConfigProvider
           theme={{
             components: {
@@ -119,7 +158,7 @@ const Index = () => {
                   color: '#1890ff',
                   borderColor: '#1890ff'
                 }}
-                onClick={() => redirect("frontend.admin.cinemas.view", { id: record.id })}
+                onClick={() => redirect("frontend.admin.showTimes.view", { id: record.id })}
                 hidden={!viewPer}
               />
             </Tooltip>
@@ -133,7 +172,7 @@ const Index = () => {
                   color: '#52c41a',
                   borderColor: '#52c41a'
                 }}
-                onClick={() => redirect("frontend.admin.cinemas.edit", { id: record.id })}
+                onClick={() => redirect("frontend.admin.showTimes.edit", { id: record.id })}
                 hidden={!updatePer}
               />
             </Tooltip>
@@ -150,10 +189,10 @@ const Index = () => {
                     content: t("messages:message.deleteConfirm"),
                     onOk: async () => {
                       let [error, result]: any[] = await to(
-                        cinemaService().withAuth().destroy({ id: record.id })
+                        showTimeService().withAuth().destroy({ id: record.id })
                       );
                       if (error) return notify(t(`errors:${error.code}`), "", "error");
-                      notify(t("messages:message.recordCinemaDeleted"));
+                      notify(t("messages:message.recordShowTimeDeleted"));
                       if (tableRef.current !== null) {
                         tableRef.current.reload();
                       }
@@ -178,12 +217,12 @@ const Index = () => {
 
   const fetchData = async (values: any) => {
     if (!values.sorting.length) {
-      values.sorting = [{ field: "cinemas.id", direction: "desc" }];
+      values.sorting = [{ field: "showTimes.movieId", direction: "desc" }];
     }
     setCacheFilter(values)
 
-    let [error, cinemas]: [any, any[]] = await to(
-      cinemaService().withAuth().index(values)
+    let [error, showTimes]: [any, any[]] = await to(
+      showTimeService().withAuth().index(values)
     );
     if (error) {
       const { code, message } = error;
@@ -191,16 +230,16 @@ const Index = () => {
       return {};
     }
 
-    return cinemas;
+    return showTimes;
   };
 
   const onDelete = async () => {
     let [error, result]: any[] = await to(
-      cinemaService().withAuth().delete({ ids: selectedIds })
+      showTimeService().withAuth().delete({ ids: selectedIds })
     );
 
     if (error) return notify(t(`errors:${error.code}`), "", "error");
-    notify(t("messages:message.recordCinemaDeleted"));
+    notify(t("messages:message.recordShowTimeDeleted"));
 
     if (tableRef.current !== null) {
       tableRef.current.reload();
@@ -222,7 +261,7 @@ const Index = () => {
     <div className="content">
       <Button
         hidden={!createPer}
-        onClick={() => redirect("frontend.admin.cinemas.create")}
+        onClick={() => redirect("frontend.admin.showTimes.create")}
         type="primary"
         className="btn-top"
       >
@@ -266,15 +305,15 @@ Index.Layout = (props) => {
 
   return (
     <Layout
-      title={t("pages:cinemas.index.title")}
-      description={t("pages:cinemas.index.description")}
+      title={t("pages:showTimes.index.title")}
+      description={t("pages:showTimes.index.description")}
       {...props}
     />
   );
 };
 
 Index.permissions = {
-  "cinemas": "R",
+  "showTImes": "R",
 };
 
 export default Index;

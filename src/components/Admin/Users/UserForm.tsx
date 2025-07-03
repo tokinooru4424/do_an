@@ -147,7 +147,7 @@ const UserForm = ({ form, isEdit }: { form: any; isEdit: boolean }) => {
             { required: true, message: t("messages:form.required", { name: t("pages:users.form.birthday") }) },
           ]}
         >
-          <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" placeholder={t("pages:users.form.birthday")} />
+          <DatePicker style={{ width: '100%' }} placeholder={t("pages:users.form.birthday")} format="DD/MM/YYYY" />
         </Form.Item>
       </Col>
 

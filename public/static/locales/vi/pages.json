@@ -233,6 +233,126 @@
       "email": "Email"
     }
   },
+  "halls": {
+    "index": {
+      "title": "Danh sách phòng chiếu",
+      "description": ""
+    },
+    "create": {
+      "title": "Tạo phòng chiếu mới",
+      "description": ""
+    },
+    "edit": {
+      "title": "Chỉnh sửa phòng chiếu",
+      "description": ""
+    },
+    "view": {
+      "title": "Thông tin phòng chiếu",
+      "description": ""
+    },
+    "table": {
+      "name": "Tên phòng chiếu",
+      "cinema": "Rạp",
+      "format": "Định dạng",
+      "description": "Mô tả",
+      "createdAt": "Ngày tạo",
+      "actions": "Hành động"
+    },
+    "form": {
+      "name": "Tên phòng chiếu",
+      "description": "Mô tả",
+      "cinema": "Rạp",
+      "format": "Định dạng",
+      "totalSeat": "Tổng số ghế",
+      "seatInRow": "Số ghế trong hàng",
+      "seatInColumn": "Số ghế trong cột"
+    }
+  },
+  "showTimes": {
+    "index": {
+      "title": "Danh sách suất chiếu",
+      "description": ""
+    },
+    "create": {
+      "title": "Tạo suất chiếu mới",
+      "description": ""
+    },
+    "edit": {
+      "title": "Chỉnh sửa suất chiếu",
+      "description": ""
+    },
+    "view": {
+      "title": "Thông tin suất chiếu",
+      "description": ""
+    },
+    "table": {
+      "startTime": "Thời gian bắt đầu",
+      "endTime": "Thời gian kết thúc",
+      "language": "Ngôn ngữ",
+      "format": "Định dạng",
+      "hall": "Phòng chiếu",
+      "movie": "Phim",
+      "subtitle": "Phụ đề",
+      "createdAt": "Ngày tạo",
+      "actions": "Hành động"
+    },
+    "form": {
+      "startTime": "Thời gian bắt đầu",
+      "endTime": "Thời gian kết thúc",
+      "language": "Ngôn ngữ",
+      "format": "Định dạng",
+      "hall": "Phòng chiếu",
+      "movie": "Phim",
+      "subtitle": "Phụ đề",
+      "formatNotMatch": "Định dạng của phim và phòng chiếu không khớp!",
+      "endTimeInvalid": "Thời gian kết thúc phải lớn hơn thời gian bắt đầu cộng thời lượng phim!",
+      "hallFormat": "Định dạng phòng chiếu"
+    }
+  },
+  "movies": {
+    "index": {
+      "title": "Danh sách phim",
+      "description": ""
+    },
+    "create": {
+      "title": "Tạo phim mới",
+      "description": ""
+    },
+    "edit": {
+      "title": "Chỉnh sửa phim",
+      "description": ""
+    },
+    "view": {
+      "title": "Thông tin phim",
+      "description": ""
+    },
+    "table": {
+      "genre": "Thể loại",
+      "image": "Hình ảnh",
+      "title": "Tên phim",
+      "duration": "Thời lượng",
+      "format": "Định dạng",
+      "realeaseDate": "Ngày phát hành",
+      "status": "Trạng thái",
+      "createdAt": "Ngày tạo",
+      "actions": "Hành động"
+    },
+    "form": {
+      "genre": "Thể loại",
+      "image": "Hình ảnh",
+      "title": "Tên phim",
+      "duration": "Thời lượng",
+      "format": "Định dạng",
+      "realeaseDate": "Ngày phát hành",
+      "director": "Đạo diễn",
+      "cast": "Diễn viên",
+      "country": "Quốc gia",
+      "description": "Mô tả",
+      "trailer": "Trailer",
+      "status": "Trạng thái",
+      "banner": "Banner"
+    }
+  },
   "errors": {
     "403": {
       "title": "Bạn không có quyền truy cập",

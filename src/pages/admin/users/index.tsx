@@ -94,7 +94,7 @@ const Index = () => {
       filterable: true,
       render: (text: Date, record: any) => formatDate(text),
       renderFilter: ({ column, confirm, ref }: FilterParam) => (
-        <FilterDatePicker column={column} confirm={confirm} ref={ref} />
+        <FilterDatePicker column={column} confirm={confirm} ref={ref} style={{ width: '100%' }} format="DD/MM/YYYY" />
       ),
     },
     {

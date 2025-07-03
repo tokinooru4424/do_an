@@ -91,7 +91,13 @@
     "enable2FaSuccess": "2FA has been installed successfully. You will need to re-login to continue.",
     "recordCinemaCreated": "Tạo mới rạp chiếu phim thành công!",
     "recordCinemaUpdated": "Cập nhật rạp chiếu phim thành công!",
-    "recordCinemaDeleted": "Xóa rạp chiếu phim thành công!"
+    "recordCinemaDeleted": "Xóa rạp chiếu phim thành công!",
+    "recordHallCreated": "Tạo mới phòng chiếu phim thành công!",
+    "recordHallUpdated": "Cập nhật phòng chiếu phim thành công!",
+    "recordHallDeleted": "Xóa phòng chiếu phim thành công!",
+    "recordShowTimeCreated": "Tạo mới phòng chiếu phim thành công!",
+    "recordShowTimeUpdated": "Cập nhật phòng chiếu phim thành công!",
+    "recordShowTimeDeleted": "Xóa phòng chiếu phim thành công!"
   },
   "confirm": {
     "title": "Xác nhận",

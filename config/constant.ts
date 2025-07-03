@@ -34,7 +34,21 @@ const numberInMonthProfit = {
   "12": 31
 }
 
+const hallFormat = {
+  "1": "2D",
+  "2": "3D",
+  "3": "IMAX",
+  "4": "4DX",
+  "5": "SCREENX"
+}
+
+const movieStatus = {
+  "1": "Đang hoạt động",
+  "2": "Ngừng hoạt động",
+  "3": "Chưa hoạt động"
+}
+
 export default {
-  roleKey, numberInMonth, numberInMonthProfit
+  roleKey, numberInMonth, numberInMonthProfit, hallFormat, movieStatus
 }
 

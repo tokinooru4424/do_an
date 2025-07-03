@@ -3,6 +3,7 @@ import useBaseHook from "@src/hooks/BaseHook";
 import usePermissionHook from "@src/hooks/PermissionHook";
 import dynamic from "next/dynamic";
 import moment from "moment";
+import useSWR from "swr";
 
 import { GridTable } from "@src/components/Table";
 import { Button, ConfigProvider, Space, Tooltip } from "antd";
@@ -12,11 +13,13 @@ import { formatDate } from '@src/helpers/utils'
 
 
 import FilterDatePicker from "@src/components/Table/SearchComponents/DatePicker";
-import cinemaService from "@root/src/services/cinemaService";
-
 import to from "await-to-js";
 import auth from "@src/helpers/auth";
 import _ from "lodash";
+import FilterDropdown from "@src/components/Table/SearchComponents/Dropdown";
+import cinemaService from "@root/src/services/cinemaService";
+import movieService from "@root/src/services/movieService";
+import constant from 'config/constant';
 
 const Layout = dynamic(() => import("@src/layouts/Admin"), { ssr: false });
 
@@ -30,71 +33,124 @@ const Index = () => {
 
   const { checkPermission } = usePermissionHook();
   const createPer = checkPermission({
-    cinemas: "C",
+    movies: "C",
   });
   const updatePer = checkPermission({
-    cinemas: "U",
+    movies: "U",
   });
   const deletePer = checkPermission({
-    cinemas: "D",
+    movies: "D",
   });
   const viewPer = checkPermission({
-    cinemas: "R"
+    movies: "R"
   });
 
   const columns = [
     {
-      title: t("pages:cinemas.table.name"),
-      dataIndex: "name",
-      key: "cinemas.name",
+      title: t("pages:movies.table.genre"),
+      dataIndex: "genre",
+      key: "movies.genre",
       sorter: true,
       filterable: true,
     },
     {
-      title: t("pages:cinemas.table.email"),
-      dataIndex: "email",
-      key: "cinemas.email",
+      title: t("pages:movies.table.image"),
+      dataIndex: "image",
+      key: "movies.image",
+      render: (url: string) =>
+        url ? <img src={url} alt="movie" style={{ width: 60, height: 90, objectFit: 'cover' }} /> : null,
+    },
+    {
+      title: t("pages:movies.table.title"),
+      dataIndex: "title",
+      key: "movies.title",
       sorter: true,
       filterable: true,
     },
     {
-      title: t("pages:cinemas.table.phoneNumber"),
-      dataIndex: "phoneNumber",
-      key: "cinemas.phoneNumber",
+      title: t("pages:movies.table.duration"),
+      dataIndex: "duration",
+      key: "movies.duration",
       sorter: true,
       filterable: true,
+      render: (value: number) => value ? `${value} phút` : '',
     },
     {
-      title: t("pages:cinemas.table.address"),
-      dataIndex: "address",
-      key: "cinemas.address",
+      title: t("pages:movies.table.format"),
+      dataIndex: "format",
+      key: "movies.format",
       sorter: true,
       filterable: true,
+      render: (value: number) => constant.hallFormat?.[value?.toString()] || value,
+      renderFilter: ({ column, confirm, ref }: FilterParam) => {
+        const formatOptions = Object.entries(constant.hallFormat).map(([key, value]) => ({
+          label: value,
+          value: Number(key),
+        }));
+        return (
+          <FilterDropdown
+            column={column}
+            confirm={confirm}
+            ref={ref}
+            mode="multiple"
+            options={formatOptions}
+            placeholder="Chọn định dạng"
+          />
+        );
+      },
     },
     {
-      title: t("pages:cinemas.table.description"),
-      dataIndex: "description",
-      key: "cinemas.description",
+      title: t("pages:movies.table.realeaseDate"),
+      dataIndex: "realeaseDate",
+      key: "movies.realeaseDate",
       sorter: true,
       filterable: true,
-    },
-    {
-      title: t("pages:cinemas.table.createdAt"),
-      dataIndex: "createdAt",
-      key: "cinemas.createdAt",
-      sorter: true,
-      filterable: true,
-      render: (text: Date, record: any) => formatDate(text),
+      render: (text: Date) => text ? moment(text).format("DD/MM/YYYY") : "",
       renderFilter: ({ column, confirm, ref }: FilterParam) => (
-        <FilterDatePicker column={column} confirm={confirm} ref={ref} style={{ width: '100%' }} format="DD/MM/YYYY" />
+        <FilterDatePicker column={column} confirm={confirm} ref={ref} />
       ),
     },
     {
-      title: t("pages:cinemas.table.actions"),
+      title: t("pages:movies.table.status"),
+      dataIndex: "status",
+      key: "movies.status",
+      sorter: true,
+      filterable: true,
+      render: (value: number) => constant.movieStatus?.[value?.toString()] || value,
+      renderFilter: ({ column, confirm, ref }: FilterParam) => {
+        const statusOptions = Object.entries(constant.movieStatus).map(([key, value]) => ({
+          label: value,
+          value: Number(key),
+        }));
+        return (
+          <FilterDropdown
+            column={column}
+            confirm={confirm}
+            ref={ref}
+            mode="multiple"
+            options={statusOptions}
+            placeholder="Chọn trạng thái"
+          />
+        );
+      },
+    },
+    {
+      title: t("pages:movies.table.createdAt"),
+      dataIndex: "createdAt",
+      key: "movies.createdAt",
+      sorter: true,
+      filterable: true,
+      render: (text: Date) => text ? moment(text).format("DD/MM/YYYY HH:mm") : "",
+      renderFilter: ({ column, confirm, ref }: FilterParam) => (
+        <FilterDatePicker column={column} confirm={confirm} ref={ref} />
+      ),
+    },
+    {
+      title: t("pages:movies.table.actions"),
       key: "actions",
       fixed: "right",
       width: 120,
-      render: (text: string, record: Cinema) => (
+      render: (text: string, record: any) => (
         <ConfigProvider
           theme={{
             components: {
@@ -119,7 +175,7 @@ const Index = () => {
                   color: '#1890ff',
                   borderColor: '#1890ff'
                 }}
-                onClick={() => redirect("frontend.admin.cinemas.view", { id: record.id })}
+                onClick={() => redirect("frontend.admin.movies.view", { id: record.id })}
                 hidden={!viewPer}
               />
             </Tooltip>
@@ -133,7 +189,7 @@ const Index = () => {
                   color: '#52c41a',
                   borderColor: '#52c41a'
                 }}
-                onClick={() => redirect("frontend.admin.cinemas.edit", { id: record.id })}
+                onClick={() => redirect("frontend.admin.movies.edit", { id: record.id })}
                 hidden={!updatePer}
               />
             </Tooltip>
@@ -150,10 +206,10 @@ const Index = () => {
                     content: t("messages:message.deleteConfirm"),
                     onOk: async () => {
                       let [error, result]: any[] = await to(
-                        cinemaService().withAuth().destroy({ id: record.id })
+                        movieService().withAuth().destroy({ id: record.id })
                       );
                       if (error) return notify(t(`errors:${error.code}`), "", "error");
-                      notify(t("messages:message.recordCinemaDeleted"));
+                      notify(t("messages:message.recordMovieDeleted"));
                       if (tableRef.current !== null) {
                         tableRef.current.reload();
                       }
@@ -178,12 +234,12 @@ const Index = () => {
 
   const fetchData = async (values: any) => {
     if (!values.sorting.length) {
-      values.sorting = [{ field: "cinemas.id", direction: "desc" }];
+      values.sorting = [{ field: "movies.id", direction: "desc" }];
     }
     setCacheFilter(values)
 
-    let [error, cinemas]: [any, any[]] = await to(
-      cinemaService().withAuth().index(values)
+    let [error, movies]: [any, any[]] = await to(
+      movieService().withAuth().index(values)
     );
     if (error) {
       const { code, message } = error;
@@ -191,16 +247,16 @@ const Index = () => {
       return {};
     }
 
-    return cinemas;
+    return movies;
   };
 
   const onDelete = async () => {
     let [error, result]: any[] = await to(
-      cinemaService().withAuth().delete({ ids: selectedIds })
+      movieService().withAuth().delete({ ids: selectedIds })
     );
 
     if (error) return notify(t(`errors:${error.code}`), "", "error");
-    notify(t("messages:message.recordCinemaDeleted"));
+    notify(t("messages:message.recordMovieDeleted"));
 
     if (tableRef.current !== null) {
       tableRef.current.reload();
@@ -222,7 +278,7 @@ const Index = () => {
     <div className="content">
       <Button
         hidden={!createPer}
-        onClick={() => redirect("frontend.admin.cinemas.create")}
+        onClick={() => redirect("frontend.admin.movies.create")}
         type="primary"
         className="btn-top"
       >
@@ -266,15 +322,15 @@ Index.Layout = (props) => {
 
   return (
     <Layout
-      title={t("pages:cinemas.index.title")}
-      description={t("pages:cinemas.index.description")}
+      title={t("pages:movies.index.title")}
+      description={t("pages:movies.index.description")}
       {...props}
     />
   );
 };
 
 Index.permissions = {
-  "cinemas": "R",
+  "movies": "R",
 };
 
 export default Index;

@@ -13,7 +13,11 @@ import {
   QuestionOutlined,
   SettingOutlined,
   HistoryOutlined,
-  CommentOutlined
+  CommentOutlined,
+  VideoCameraOutlined,
+  PlaySquareOutlined,
+  ScheduleOutlined,
+  BankOutlined
 } from "@ant-design/icons";
 import auth from "@src/helpers/auth";
 const user = auth().user;
@@ -51,11 +55,32 @@ const sidebar = [
   },
   {
     routeName: "frontend.admin.cinemas.index",
-    icon: <AppstoreOutlined />,
+    icon: <BankOutlined />,
     permissions: {
       cinemas: "R",
     },
-  }
+  },
+  {
+    routeName: "frontend.admin.halls.index",
+    icon: <VideoCameraOutlined />,
+    permissions: {
+      halls: "R",
+    },
+  },
+  {
+    routeName: "frontend.admin.showTimes.index",
+    icon: <ScheduleOutlined />,
+    permissions: {
+      showTimes: "R",
+    },
+  },
+  {
+    routeName: "frontend.admin.movies.index",
+    icon: <PlaySquareOutlined />,
+    permissions: {
+      showTimes: "R",
+    },
+  },
 ];
 
 export default sidebar;

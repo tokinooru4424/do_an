@@ -63,7 +63,7 @@ export default class CinemaController extends BaseController {
         delete params.id
 
         let exist = await this.Model.getById(id)
-        if (!exist) throw new ApiException(6006, "Cinema doesn't exists!")
+        if (!exist) throw new ApiException(6101, "Cinema doesn't exists!")
 
         let emailExist = await this.Model.getOne({ email: params.email })
         if (emailExist && emailExist.id !== exist.id) throw new ApiException(6021, "Email already exists!")
@@ -84,7 +84,7 @@ export default class CinemaController extends BaseController {
         let params = this.validate(inputs, allowFields, { removeNotAllow: true });
 
         let exist = await this.Model.getById(params.id)
-        if (!exist) throw new ApiException(6006, "Cinema doesn't exists!")
+        if (!exist) throw new ApiException(6101, "Cinema doesn't exists!")
 
         let result = await this.Model.deleteById(params.id);
 
@@ -103,7 +103,7 @@ export default class CinemaController extends BaseController {
         let params = this.validate(inputs, allowFields, { removeNotAllow: true });
 
         let exist = await this.Model.query().whereIn('id', params.ids)
-        if (exist.length === 0) throw new ApiException(6006, "Cinemas don't exist!")
+        if (exist.length === 0) throw new ApiException(6101, "Cinemas don't exist!")
 
         let result = await this.Model.query().whereIn('id', params.ids).delete();
 
@@ -122,7 +122,7 @@ export default class CinemaController extends BaseController {
         let params = this.validate(inputs, allowFields, { removeNotAllow: true });
 
         let result = await this.Model.getById(params.id)
-        if (!result) throw new ApiException(6006, "Cinema doesn't exists!")
+        if (!result) throw new ApiException(6101, "Cinema doesn't exists!")
 
         return result
     }
@@ -136,8 +136,21 @@ export default class CinemaController extends BaseController {
         let params = this.validate(inputs, allowFields, { removeNotAllow: true });
 
         let result = await this.Model.getById(params.id)
-        if (!result) throw new ApiException(6006, "Cinema doesn't exists!")
+        if (!result) throw new ApiException(6101, "Cinema doesn't exists!")
 
         return result
+    }
+
+    async select2() {
+        const data = this.request.all()
+        const project = [
+            'name as label',
+            'id as value'
+        ]
+        let result = await this.Model.query()
+            .select(project)
+            .getForGridTable(data);
+
+        return result;
     }
 }

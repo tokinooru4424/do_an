@@ -1,6 +1,6 @@
 import Base from "./baseService";
 
-const name = 'cinemas'
+const name = 'movies'
 
 class usersService extends Base {
     index = async (filter: any) => {
@@ -13,7 +13,7 @@ class usersService extends Base {
 
     select2 = async (filter: any) => {
         return this.request({
-            url: `/api/v1/cinemas/select2`,
+            url: `/api/v1/${name}/select2`,
             method: "GET",
             data: filter,
         });
@@ -56,6 +56,15 @@ class usersService extends Base {
             url: `/api/v1/${name}/:id`,
             method: "DELETE",
             data: data,
+        });
+    };
+
+    uploadPoster = async (data: any) => {
+        return this.request({
+            url: '/api/v1/upload',
+            method: 'POST',
+            data: data,
+            options: { allowUpload: true },
         });
     };
 }

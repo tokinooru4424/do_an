@@ -21,6 +21,9 @@ Route.group(() => {
   Route.get("/routes", "RouteController.index").name('routes.index')
   // ---------------------------------- End Route Routes -----------------------------------//
 
+  // Route GET /movies (public, không cần AuthApiMiddleware)
+  Route.get("/movies", "MovieController.index").name('movies.index');
+
   Route.group(() => {
     Route.post("/changePassword", "AuthController.changePassword").name("auth.changePassword")
     Route.post("/logout", "AuthController.logout").name('auth.logout')
@@ -62,8 +65,40 @@ Route.group(() => {
     Route.resource("/cinemas", "CinemaController").name('cinemas').middleware([
       permissionResource(['cinemas'])
     ])
+    Route.get("/cinemas/select2", "CinemaController.select2").name('cinemas.select2').middleware([
+      permission({ 'cinemas': 'R' })
+    ])
     // ---------------------------------- End Cinema Routes -----------------------------------//
 
+    // ---------------------------------- Hall Routes ---------------------------------------//
+    Route.resource("/halls", "HallController").name('halls').middleware([
+      permissionResource(['halls'])
+    ])
+    Route.get("/halls/select2", "HallController.select2").name('halls.select2').middleware([
+      permission({ 'halls': 'R' })
+    ])
+    // ---------------------------------- End Hall Routes -----------------------------------//
+
+    // ---------------------------------- Showtime Routes ---------------------------------------//
+    Route.resource("/showtimes", "ShowTimeController").name('showtimes').middleware([
+      permissionResource(['showtimes'])
+    ])
+    Route.get("/showtimes/select2", "ShowTimeController.select2").name('showtimes.select2').middleware([
+      permission({ 'showtimes': 'R' })
+    ])
+    // ---------------------------------- Showtime Hall Routes -----------------------------------//
+
+    // ---------------------------------- Movie Routes ---------------------------------------//
+    Route.resource("/movies", "MovieController").name('movies').middleware([
+      permissionResource(['movies'])
+    ])
+    Route.get("/movies/select2", "MovieController.select2").name('movies.select2').middleware([
+      permission({ 'movies': 'R' })
+    ])
+    // ---------------------------------- MovieHall Routes -----------------------------------//
+
+    // Thêm route upload ảnh
+    Route.post("/upload", "UploadController.upload").name('upload.upload').middleware([upload.single('files')]);
     // ---------------------------------- End Routes -----------------------------------//
   }).middleware([AuthApiMiddleware])
 }).middleware([ExtendMiddleware]).name('api').prefix("/api/v1")

@@ -82,6 +82,7 @@ class FilterDatePicker extends React.Component<any, any> {
         style={{ width: "256px", marginBottom: 8, }}
         //autoFocus={true}
         defaultValue={[null, null]}
+        format={this.props.format || 'DD/MM/YYYY'}
       />
     </div>
   }

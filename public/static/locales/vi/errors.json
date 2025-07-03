@@ -3,9 +3,7 @@
   "-1": "Không thể kết nối với máy chủ!",
   "401": "Token has expired!",
   "403": "Bạn không được ủy quyền!",
-
   "4000": "Nhập excel xảy ra lỗi",
-
   "6000": "Nhóm vai trò không tồn tại!",
   "6002": "Tên nhóm vai trò đã tồn tại!",
   "6003": "Không thể xóa nhóm gốc!",
@@ -27,7 +25,6 @@
   "6019": "Verify Failed!",
   "6020": "Please enter OTP!",
   "6021": "Email đã tồn tại!",
-
   "6022": "Bạn không thể xóa tài khoản của bạn.",
   "7000": "Tài khoản hoặc mật khẩu không đúng",
   "7002": "The data does not exist",
@@ -36,11 +33,15 @@
   "7006": "Dung lượng File phải nhỏ hơn 5MB",
   "7007": "File đã tồn tại",
   "7008": "File data invalid",
-
   "9994": "Dữ liệu gửi lên thiếu",
   "9995": "Lỗi cơ sở dữ liệu",
   "9996": "Sai kiểu dữ liệu",
   "9997": "Not access",
   "9998": "Bạn cần đăng nhập để thực hiện chức năng này!",
-  "9999": "Lỗi không xác định"
+  "9999": "Lỗi không xác định",
+  "6101": "Rạp chiếu phim không tồn tại!",
+  "6201": "Phòng chiếu không tồn tại!",
+  "6301": "Suất chiếu không tồn tại!",
+  "6302": "Đã có suất chiếu khác trong phòng này trùng thời gian!",
+  "6401": "Phim không tồn tại!"
 }

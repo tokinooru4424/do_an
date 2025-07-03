@@ -28,6 +28,27 @@
         "edit": "Chỉnh sửa rạp phim",
         "view": "Thông tin rạp phim",
         "create": "Tạo rạp phim"
+      },
+      "halls": {
+        "title": "Quản lý phòng chiếu",
+        "index": "Danh sách phòng chiếu",
+        "edit": "Chỉnh sửa phòng chiếu",
+        "view": "Thông tin phòng chiếu",
+        "create": "Tạo phòng chiếu"
+      },
+      "showTimes": {
+        "title": "Quản lý suất chiếu",
+        "index": "Danh sách suất chiếu",
+        "edit": "Chỉnh sửa suất chiếu",
+        "view": "Thông tin suất chiếu",
+        "create": "Tạo suất chiếu"
+      },
+      "movies": {
+        "title": "Quản lý phim",
+        "index": "Danh sách phim",
+        "edit": "Chỉnh sửa phim",
+        "view": "Thông tin phim",
+        "create": "Tạo phim"
       }
     }
   }
