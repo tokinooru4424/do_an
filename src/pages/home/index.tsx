@@ -24,6 +24,7 @@ const Home = () => {
     const router = useRouter();
     const [activeLink, setActiveLink] = useState(router.pathname);
     const [isLoggedIn, setIsLoggedIn] = useState(!!auth().token);
+    const user = auth().user;
 
     useEffect(() => {
         const handleScroll = () => {
@@ -98,15 +99,18 @@ const Home = () => {
         setIsLoggedIn(false);
     };
 
-    const user = auth().user;
+    const handleMenuClick = (e) => {
+        if (e.key === 'profile') {
+            router.push('/home/profile');
+        }
+        if (e.key === 'logout') {
+            handleLogout();
+        }
+    };
     const menu = (
-        <Menu>
-            <Menu.Item key="profile">
-                Thông tin cá nhân
-            </Menu.Item>
-            <Menu.Item key="logout" onClick={handleLogout}>
-                Đăng xuất
-            </Menu.Item>
+        <Menu onClick={handleMenuClick}>
+            <Menu.Item key="profile">Thông tin cá nhân</Menu.Item>
+            <Menu.Item key="logout">Đăng xuất</Menu.Item>
         </Menu>
     );
 

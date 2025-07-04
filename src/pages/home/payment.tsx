@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Form, Input, Button, Radio, Typography, Divider, Spin, Layout, Avatar, Dropdown, Menu, Modal } from 'antd';
+import { Card, Form, Input, Button, Radio, Typography, Divider, Spin, Layout, Avatar, Dropdown, Menu, Modal, message } from 'antd';
 import { DownOutlined, UserOutlined } from '@ant-design/icons';
 import styles from '@src/scss/pages/Home.module.scss';
 import { useRouter } from 'next/router';
@@ -7,14 +7,15 @@ import auth from '@src/helpers/auth';
 import RegisterModal from '@src/components/Auth/RegisterModal';
 import LoginModal from '@src/components/Auth/LoginModal';
 import ForgotPasswordModal from '@src/components/Auth/ForgotPasswordModal';
+import PaymentService from '@src/services/paymentService';
 
-const { Title, Text } = Typography;
 const { Header, Footer } = Layout;
 
 const PaymentPage = () => {
     const router = useRouter();
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [paymentLoading, setPaymentLoading] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(!!auth().token);
     const [isRegisterModalVisible, setIsRegisterModalVisible] = useState(false);
     const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
@@ -95,6 +96,53 @@ const PaymentPage = () => {
     });
     const totalFee = 0;
     const totalAll = totalPrice + totalFee;
+
+    const handleMomoPayment = async () => {
+        if (!isLoggedIn) {
+            message.error('Vui lòng đăng nhập để thanh toán');
+            return;
+        }
+
+        setPaymentLoading(true);
+        try {
+            const orderId = `ORDER_${Date.now()}`;
+            const orderInfo = `Thanh toán vé xem phim: ${movie?.title || 'Unknown Movie'}`;
+
+            // Sử dụng biến môi trường hoặc hardcode đúng port backend
+            const backendBaseUrl = window.location.origin;
+            const returnUrl = `${backendBaseUrl}/payment/success`;
+            const notifyUrl = `${backendBaseUrl}/api/v1/payment/momo/callback`;
+
+            const paymentData = {
+                amount: totalAll,
+                orderInfo: orderInfo,
+                returnUrl: returnUrl,
+                notifyUrl: notifyUrl,
+                orderId: orderId
+            };
+
+            const response = await new PaymentService().createMomoPayment(paymentData);
+
+            if (response.success && response.payUrl) {
+                // Lưu thông tin đơn hàng vào localStorage để theo dõi
+                localStorage.setItem('currentOrder', JSON.stringify({
+                    orderId: orderId,
+                    paymentData: data,
+                    payUrl: response.payUrl
+                }));
+
+                // Chuyển hướng đến trang thanh toán MoMo
+                window.location.href = response.payUrl;
+            } else {
+                message.error(response.message || 'Không thể tạo đơn hàng thanh toán');
+            }
+        } catch (error) {
+            console.error('Lỗi thanh toán MoMo:', error);
+            message.error('Có lỗi xảy ra khi tạo thanh toán. Vui lòng thử lại.');
+        } finally {
+            setPaymentLoading(false);
+        }
+    };
 
     return (
         <div style={{ background: '#181b20', minHeight: '100vh' }}>
@@ -190,9 +238,43 @@ const PaymentPage = () => {
                     <div style={{ flex: 1, background: '#22252b', borderRadius: 16, padding: 32, color: '#fff', minWidth: 340, maxWidth: 400 }}>
                         <div style={{ fontWeight: 700, fontSize: 22, marginBottom: 24 }}>Phương thức thanh toán</div>
                         <Form layout="vertical" onFinish={() => { }}>
-                            <Form.Item name="paymentMethod" initialValue="vietqr" style={{ marginBottom: 24 }}>
-
+                            <Form.Item name="paymentMethod" initialValue="momo" style={{ marginBottom: 24 }}>
+                                <Radio.Group style={{ width: '100%' }}>
+                                    <Radio.Button
+                                        value="momo"
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            width: '100%',
+                                            marginBottom: 12,
+                                            background: '#181b20',
+                                            border: '1.5px solid #d63384',
+                                            borderRadius: 12,
+                                            padding: 16,
+                                            color: '#d63384',
+                                            fontWeight: 600,
+                                            fontSize: 18,
+                                            textAlign: 'left',
+                                            lineHeight: 'normal'
+                                        }}
+                                    >
+                                        <img
+                                            src="/icons/momo.svg"
+                                            alt="MoMo"
+                                            style={{
+                                                height: 24,
+                                                width: 24,
+                                                marginRight: 12,
+                                                verticalAlign: 'middle',
+                                                display: 'inline-block',
+                                                flexShrink: 0
+                                            }}
+                                        />
+                                        <span style={{ display: 'inline-block', lineHeight: 1 }}>MoMo Wallet</span>
+                                    </Radio.Button>
+                                </Radio.Group>
                             </Form.Item>
+
                             <div style={{ margin: '32px 0 16px 0' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 17, marginBottom: 8, color: '#fff' }}>
                                     <span>Thanh toán</span>
@@ -207,8 +289,41 @@ const PaymentPage = () => {
                                     <span>{totalAll.toLocaleString('vi-VN')}đ</span>
                                 </div>
                             </div>
-                            <Button type="primary" htmlType="submit" block size="large" style={{ borderRadius: 24, fontWeight: 600, fontSize: 18, background: 'linear-gradient(90deg, #ff3838 0%, #ff5f5f 100%)', border: 'none', marginBottom: 16 }}>Thanh toán</Button>
-                            <Button block size="large" style={{ borderRadius: 24, fontWeight: 600, fontSize: 18, background: 'transparent', color: '#fff', border: '1.5px solid #fff' }} onClick={() => router.back()}>Quay lại</Button>
+
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                block
+                                size="large"
+                                loading={paymentLoading}
+                                onClick={handleMomoPayment}
+                                style={{
+                                    borderRadius: 24,
+                                    fontWeight: 600,
+                                    fontSize: 18,
+                                    background: 'linear-gradient(90deg, #d63384 0%, #e91e63 100%)',
+                                    border: 'none',
+                                    marginBottom: 16
+                                }}
+                            >
+                                {paymentLoading ? 'Đang xử lý...' : 'Thanh toán bằng MoMo'}
+                            </Button>
+
+                            <Button
+                                block
+                                size="large"
+                                style={{
+                                    borderRadius: 24,
+                                    fontWeight: 600,
+                                    fontSize: 18,
+                                    background: 'transparent',
+                                    color: '#fff',
+                                    border: '1.5px solid #fff'
+                                }}
+                                onClick={() => router.back()}
+                            >
+                                Quay lại
+                            </Button>
                         </Form>
                     </div>
                 </div>

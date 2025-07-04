@@ -101,5 +101,18 @@ Route.group(() => {
     Route.post("/upload/banner", "UploadController.uploadBanner").name('upload.banner').middleware([upload.single('files')]);
     // ---------------------------------- End Routes -----------------------------------//
   }).middleware([AuthApiMiddleware])
+
+  // ---------------------------------- Public Routes ---------------------------------------//
+  Route.get("/public/movies", "PublicMovieController.index").name('public.movies.index')
+  Route.get("/public/movies/:id", "PublicMovieController.show").name('public.movies.show')
+  Route.get("/public/cinemas", "PublicCinemaController.index").name('public.cinemas.index')
+  Route.get("/public/showtimes", "PublicShowTimeController.index").name('public.showtimes.index')
+
+  // ---------------------------------- Payment Routes ---------------------------------------//
+  Route.post("/payment/momo/create", "PaymentController.createMomoPayment").name('payment.momo.create')
+  Route.post("/payment/momo/callback", "PaymentController.momoCallback").name('payment.momo.callback')
+  Route.get("/payment/momo/return", "PaymentController.momoReturn").name('payment.momo.return')
+  // ---------------------------------- End Payment Routes -----------------------------------//
+
 }).middleware([ExtendMiddleware]).name('api').prefix("/api/v1")
 
