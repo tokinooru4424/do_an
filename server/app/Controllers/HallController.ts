@@ -47,7 +47,10 @@ export default class HallController extends BaseController {
             name: "string!",
             cinemaId: "number!",
             description: "string",
-            format: "number!"
+            format: "number!",
+            totalSeat: "number",
+            seatInRow: "number",
+            seatInColumn: "number"
         }
         let params = this.validate(inputs, allowFields, { removeNotAllow: true })
         const { id } = params
@@ -93,11 +96,17 @@ export default class HallController extends BaseController {
     async select2() {
         const data = this.request.all()
         const project = [
-            'name as label',
-            'id as value',
-            'format'
+            'halls.name as label',
+            'halls.id as value',
+            'halls.format as hallFormat',
+            'halls.cinemaId',
+            'cinemas.name as cinemaName',
+            'halls.totalSeat',
+            'halls.seatInRow',
+            'halls.seatInColumn'
         ]
         let result = await this.Model.query()
+            .leftJoin('cinemas', 'halls.cinemaId', 'cinemas.id')
             .select(project)
             .getForGridTable(data);
 

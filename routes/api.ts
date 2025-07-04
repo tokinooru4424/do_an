@@ -23,6 +23,13 @@ Route.group(() => {
 
   // Route GET /movies (public, không cần AuthApiMiddleware)
   Route.get("/movies", "MovieController.index").name('movies.index');
+  Route.get("/movies/select2", "MovieController.select2").name('movies.select2');
+  Route.get("/movies/:id", "MovieController.detail").name('movies.detail');
+
+  // Route public, không cần xác thực
+  Route.get("/cinemas/select2", "CinemaController.select2").name('cinemas.select2')
+  Route.get("/showtimes", "ShowTimeController.index").name('showtimes.index')
+  Route.get("/halls/select2", "HallController.select2").name('halls.select2')
 
   Route.group(() => {
     Route.post("/changePassword", "AuthController.changePassword").name("auth.changePassword")
@@ -65,17 +72,11 @@ Route.group(() => {
     Route.resource("/cinemas", "CinemaController").name('cinemas').middleware([
       permissionResource(['cinemas'])
     ])
-    Route.get("/cinemas/select2", "CinemaController.select2").name('cinemas.select2').middleware([
-      permission({ 'cinemas': 'R' })
-    ])
     // ---------------------------------- End Cinema Routes -----------------------------------//
 
     // ---------------------------------- Hall Routes ---------------------------------------//
     Route.resource("/halls", "HallController").name('halls').middleware([
       permissionResource(['halls'])
-    ])
-    Route.get("/halls/select2", "HallController.select2").name('halls.select2').middleware([
-      permission({ 'halls': 'R' })
     ])
     // ---------------------------------- End Hall Routes -----------------------------------//
 
@@ -92,13 +93,12 @@ Route.group(() => {
     Route.resource("/movies", "MovieController").name('movies').middleware([
       permissionResource(['movies'])
     ])
-    Route.get("/movies/select2", "MovieController.select2").name('movies.select2').middleware([
-      permission({ 'movies': 'R' })
-    ])
-    // ---------------------------------- MovieHall Routes -----------------------------------//
+    // ---------------------------------- Movie Routes -----------------------------------//
 
     // Thêm route upload ảnh
     Route.post("/upload", "UploadController.upload").name('upload.upload').middleware([upload.single('files')]);
+    Route.post("/upload/poster", "UploadController.uploadPoster").name('upload.poster').middleware([upload.single('files')]);
+    Route.post("/upload/banner", "UploadController.uploadBanner").name('upload.banner').middleware([upload.single('files')]);
     // ---------------------------------- End Routes -----------------------------------//
   }).middleware([AuthApiMiddleware])
 }).middleware([ExtendMiddleware]).name('api').prefix("/api/v1")

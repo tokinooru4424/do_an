@@ -44,4 +44,50 @@ export default class UploadController extends BaseController {
             return { success: false, message: 'Upload failed', error: (err as any).message };
         }
     }
+
+    async uploadPoster() {
+        const req = this.request;
+        try {
+            const folder = 'poster';
+            let uploadDir = path.join(process.cwd(), 'public', 'upload', folder);
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+            const file = req.file;
+            if (!file) {
+                return { success: false, message: 'No file uploaded' };
+            }
+            const ext = path.extname(file.originalname);
+            const fileName = `${Date.now()}_${Math.round(Math.random() * 1e9)}${ext}`;
+            const filePath = path.join(uploadDir, fileName);
+            fs.writeFileSync(filePath, file.buffer);
+            const fileUrl = `/upload/${folder}/${fileName}`;
+            return { success: true, url: fileUrl };
+        } catch (err) {
+            return { success: false, message: 'Upload failed', error: (err as any).message };
+        }
+    }
+
+    async uploadBanner() {
+        const req = this.request;
+        try {
+            const folder = 'banner';
+            let uploadDir = path.join(process.cwd(), 'public', 'upload', folder);
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+            const file = req.file;
+            if (!file) {
+                return { success: false, message: 'No file uploaded' };
+            }
+            const ext = path.extname(file.originalname);
+            const fileName = `${Date.now()}_${Math.round(Math.random() * 1e9)}${ext}`;
+            const filePath = path.join(uploadDir, fileName);
+            fs.writeFileSync(filePath, file.buffer);
+            const fileUrl = `/upload/${folder}/${fileName}`;
+            return { success: true, url: fileUrl };
+        } catch (err) {
+            return { success: false, message: 'Upload failed', error: (err as any).message };
+        }
+    }
 } 

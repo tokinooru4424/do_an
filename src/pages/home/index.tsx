@@ -181,15 +181,13 @@ const Home = () => {
     );
     const movies = movieData?.data?.filter(movie => movie.status == 1) || [];
 
-    console.log('movieData:', movieData);
-    console.log('movies:', movies);
-    console.log('movieError:', movieError);
-    console.log('movies after filter:', movies);
-
     return (
         <Layout>
             <Header className={`${styles.header} ${isScrolled ? styles.blur : ''}`}>
                 <div className={styles.headerContent}>
+                    <div className={styles.logo}>
+                        <img src="/logo/logo.png" alt="Logo" />
+                    </div>
                     <nav className={styles.nav}>
                         <a
                             href="/"
@@ -246,51 +244,37 @@ const Home = () => {
                     <div className={styles.banner}>
                         <Carousel autoplay>
                             {movies.length > 0 ? (
-                                movies.map((movie) => (
-                                    <div key={movie.id}>
-                                        <img
-                                            src={movie.banner
-                                                ? `${process.env.NEXT_PUBLIC_API_HOST || 'http://localhost:3333'}${movie.banner}`
-                                                : movie.image
-                                                    ? `${process.env.NEXT_PUBLIC_API_HOST || 'http://localhost:3333'}${movie.image}`
-                                                    : '/no-image.png'}
-                                            alt={movie.title}
-                                            style={{
-                                                width: '100%',
-                                                height: '400px',
-                                                objectFit: 'cover',
-                                                borderRadius: '8px'
-                                            }}
-                                        />
-                                    </div>
-                                ))
+                                movies
+                                    .filter(movie => !!movie.banner)
+                                    .map((movie) => (
+                                        <div key={movie.id} onClick={() => router.push(`/home/${movie.id}`)} style={{ cursor: 'pointer' }}>
+                                            <img
+                                                src={`${process.env.NEXT_PUBLIC_API_HOST || 'http://localhost:3333'}${movie.banner}`}
+                                                alt={movie.title}
+                                                style={{ width: '100%', height: 'auto', objectFit: 'unset', display: 'block', background: '#000' }}
+                                            />
+                                        </div>
+                                    ))
                             ) : (
-                                <>
-                                    <div>
-                                        <img src="https://www.themoviedb.org/t/p/original/qWnmJb0gV4r6oJd7K8eZk8V0y4V.jpg" alt="Fake Movie Banner 1" style={{ width: '100%', height: '400px', objectFit: 'cover', borderRadius: '8px' }} />
-                                    </div>
-                                    <div>
-                                        <img src="https://www.themoviedb.org/t/p/original/xS32JdFKs2QYjKVAaL9sN4TgcG2.jpg" alt="Fake Movie Banner 2" style={{ width: '100%', height: '400px', objectFit: 'cover', borderRadius: '8px' }} />
-                                    </div>
-                                    <div>
-                                        <img src="https://www.themoviedb.org/t/p/original/vPZsdp3Zg8NfIuU8N10F3K1Xm0z.jpg" alt="Fake Movie Banner 3" style={{ width: '100%', height: '400px', objectFit: 'cover', borderRadius: '8px' }} />
-                                    </div>
-                                </>
+                                <div>
+                                    <img src="/default-banner.jpg" alt="Default Banner" style={{ width: '100%', height: 'auto', objectFit: 'unset', display: 'block', background: '#000' }} />
+                                </div>
                             )}
                         </Carousel>
                     </div>
 
                     <section className={styles.section}>
                         <div className={styles.sectionHeader}>
-                            <h2>PHIM ĐANG CHIẾU</h2>
-                            <span className={styles.viewAll}>
-                                Xem tất cả <RightOutlined />
-                            </span>
+                            <div className={styles.nowShowingTitle}>
+                                <span className={styles.dot}></span>
+                                <span>Phim đang chiếu</span>
+                            </div>
+                            <a className={styles.viewAll} href="/lich-chieu">Xem tất cả</a>
                         </div>
                         <div className={styles.movieGrid}>
                             {movies.length === 0 && <p>Không có phim đang chiếu.</p>}
                             {movies.map(movie => (
-                                <div key={movie.id} className={styles.movieCard}>
+                                <div key={movie.id} className={styles.movieCard} onClick={() => router.push(`/home/${movie.id}`)} style={{ cursor: 'pointer' }}>
                                     <img className={styles.poster} src={movie.image ? `${process.env.NEXT_PUBLIC_API_HOST || 'http://localhost:3333'}${movie.image}` : '/no-image.png'} alt={movie.title} />
                                     <div className={styles.metaTop}>
                                         <span className={styles.genre}>{movie.genre}</span>

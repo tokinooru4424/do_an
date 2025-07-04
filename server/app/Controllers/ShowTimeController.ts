@@ -14,6 +14,7 @@ export default class ShowTimeController extends BaseController {
             'movies.title as movieName',
             'showTimes.hallId',
             'halls.name as hallName',
+            'halls.cinemaId as cinemaId',
             'showTimes.startTime',
             'showTimes.endTime',
             'showTimes.format',
@@ -100,11 +101,16 @@ export default class ShowTimeController extends BaseController {
         let result = await this.Model.query()
             .leftJoin('movies', 'showTimes.movieId', 'movies.id')
             .leftJoin('halls', 'showTimes.hallId', 'halls.id')
+            .leftJoin('cinemas', 'halls.cinemaId', 'cinemas.id')
             .select(
                 'showTimes.*',
                 'movies.title as movieName',
                 'movies.duration as duration',
-                'halls.name as hallName'
+                'movies.format as movieFormat',
+                'halls.name as hallName',
+                'halls.format as hallFormat',
+                'halls.cinemaId as cinemaId',
+                'cinemas.name as cinemaName'
             )
             .where('showTimes.id', params.id)
             .first()

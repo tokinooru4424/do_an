@@ -121,7 +121,7 @@ const MovieForm = ({ form, isEdit = false }: { form: any; isEdit?: boolean }) =>
                     <Upload.Dragger
                         name="files"
                         multiple={false}
-                        action="/api/v1/upload"
+                        action="/api/v1/upload/poster"
                         listType="picture"
                         accept="image/*"
                         maxCount={1}
@@ -137,12 +137,13 @@ const MovieForm = ({ form, isEdit = false }: { form: any; isEdit?: boolean }) =>
                 <Form.Item
                     name="banner"
                     label={t('pages:movies.form.banner')}
+                    valuePropName="fileList"
+                    getValueFromEvent={normFile}
                 >
                     <Upload.Dragger
                         name="files"
                         multiple={false}
-                        action="/api/v1/upload"
-                        data={{ folder: 'banner' }}
+                        action="/api/v1/upload/banner"
                         listType="picture"
                         accept="image/*"
                         maxCount={1}

@@ -52,13 +52,24 @@ const Edit = () => {
         response: { url: movie.image }
       }];
     }
+    let bannerFileList = [];
+    if (movie.banner) {
+      bannerFileList = [{
+        uid: '-1',
+        name: 'banner',
+        status: 'done',
+        url: movie.banner,
+        response: { url: movie.banner }
+      }];
+    }
     // Chuyển đổi ngày phát hành sang dayjs nếu có
     if (movie.realeaseDate) {
       movie.realeaseDate = dayjs(movie.realeaseDate);
     }
     form.setFieldsValue({
       ...movie,
-      image: imageFileList
+      image: imageFileList,
+      banner: bannerFileList
     });
   }
 
@@ -94,6 +105,7 @@ const Edit = () => {
     } else {
       values.banner = '';
     }
+    console.log('Banner value before submit:', values.banner);
     values.duration = Number(values.duration);
     values.format = Number(values.format);
     if (values.status !== undefined) values.status = Number(values.status);

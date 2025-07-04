@@ -4,9 +4,7 @@ import { Button, Form, Col, Row, Spin } from 'antd';
 import { LeftCircleFilled, SaveFilled, DeleteFilled } from '@ant-design/icons';
 import to from 'await-to-js'
 import moment from 'moment';
-import useSWR from 'swr';
 
-import auth from '@src/helpers/auth'
 import { confirmDialog } from '@src/helpers/dialogs'
 
 import useBaseHook from '@src/hooks/BaseHook'
@@ -14,8 +12,6 @@ import usePermissionHook from "@src/hooks/PermissionHook";
 
 import ShowTimeForm from '@src/components/Admin/ShowTimes/ShowTimeForm';
 import showTimeService from '@root/src/services/showTimeService';
-import movieService from '@root/src/services/movieService';
-import hallService from '@root/src/services/hallService';
 
 const Layout = dynamic(() => import('@src/layouts/Admin'), { ssr: false })
 
@@ -29,15 +25,6 @@ const Edit = () => {
   const deletePer = checkPermission({
     "showTimes": "D"
   });
-
-  const { data: dataM } = useSWR('movieData', () =>
-    movieService().withAuth().select2({ pageSize: -1 })
-  );
-  const movies = dataM?.data || [];
-  const { data: dataH } = useSWR('hallData', () =>
-    hallService().withAuth().select2({ pageSize: -1 })
-  );
-  const halls = dataH?.data || [];
 
   const fetchData = async () => {
     let idError: any = null;
@@ -58,6 +45,9 @@ const Edit = () => {
       ...showTime,
       startTime: showTime.startTime ? moment(showTime.startTime) : undefined,
       endTime: showTime.endTime ? moment(showTime.endTime) : undefined,
+      hallFormat: showTime.hallFormat,
+      cinemaName: showTime.cinemaName,
+      cinemaId: showTime.cinemaId,
     });
   }
 
@@ -67,10 +57,8 @@ const Edit = () => {
 
   //submit form
   const onFinish = async (values: any): Promise<void> => {
-    // Kiểm tra định dạng phim và phòng chiếu
-    const movie = movies.find((m: any) => m.value == values.movieId);
-    const hall = halls.find((h: any) => h.value == values.hallId);
-    if (movie && hall && movie.format !== hall.format) {
+    // Kiểm tra định dạng phim và phòng chiếu sử dụng dữ liệu từ showTime
+    if (showTime.movieFormat !== showTime.hallFormat) {
       form.setFields([
         {
           name: 'format',
@@ -80,11 +68,11 @@ const Edit = () => {
       return;
     }
     // Kiểm tra thời lượng phim
-    if (movie && values.startTime && values.endTime) {
+    const movieDuration = showTime.duration || 0;
+    if (movieDuration && values.startTime && values.endTime) {
       const start = values.startTime.clone ? values.startTime.clone() : values.startTime;
       const end = values.endTime.clone ? values.endTime.clone() : values.endTime;
-      const duration = movie.duration || 0;
-      const minEnd = start.clone().add(duration, 'minutes');
+      const minEnd = start.clone().add(movieDuration, 'minutes');
       if (end.isBefore(minEnd)) {
         form.setFields([
           {

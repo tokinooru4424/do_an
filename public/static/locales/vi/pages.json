@@ -306,7 +306,8 @@
       "subtitle": "Phụ đề",
       "formatNotMatch": "Định dạng của phim và phòng chiếu không khớp!",
       "endTimeInvalid": "Thời gian kết thúc phải lớn hơn thời gian bắt đầu cộng thời lượng phim!",
-      "hallFormat": "Định dạng phòng chiếu"
+      "hallFormat": "Định dạng phòng chiếu",
+      "cinema": "Rạp"
     }
   },
   "movies": {

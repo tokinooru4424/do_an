@@ -20,7 +20,7 @@ const Create = () => {
   const [form] = Form.useForm();
 
   const { data: dataM } = useSWR('movieData', () =>
-    movieService().withAuth().select2({ pageSize: -1 })
+    movieService().select2({ pageSize: -1 })
   );
   const movies = dataM?.data || [];
   const { data: dataH } = useSWR('hallData', () =>
@@ -61,7 +61,7 @@ const Create = () => {
     // Xử lý dữ liệu ngày giờ nếu cần
     if (values.startTime) values.startTime = values.startTime.format('YYYY-MM-DD HH:mm');
     if (values.endTime) values.endTime = values.endTime.format('YYYY-MM-DD HH:mm');
-    let [error, result]: any[] = await to(showTimeService().withAuth().create(values));
+    let [error, result]: any[] = await to(showTimeService().create(values));
     setLoading(false)
     if (error) {
       if (error.code === 6302) {

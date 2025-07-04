@@ -48,7 +48,7 @@ const Index = () => {
   });
 
   const { data: dataM } = useSWR('movieData', () =>
-    movieService().withAuth().select2({ pageSize: -1 })
+    movieService().select2({ pageSize: -1 })
   );
   const movies = dataM?.data || [];
   const { data: dataH } = useSWR('hallData', () =>

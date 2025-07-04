@@ -17,7 +17,7 @@ const ShowTimeForm = ({ form, isEdit = false }: { form: any; isEdit?: boolean })
 
     // Fetch movies select2
     const { data: dataM } = useSWR('movieData', () =>
-        movieService().withAuth().select2({ pageSize: -1 })
+        movieService().select2({ pageSize: -1 })
     );
     const movies = getData(dataM, 'data', []);
 
@@ -51,20 +51,27 @@ const ShowTimeForm = ({ form, isEdit = false }: { form: any; isEdit?: boolean })
     // Khi chọn hall
     const handleHallChange = (hallId: number) => {
         const hall = halls.find((h: any) => h.value === hallId);
-        setHallFormat(hall?.format);
-        setHallDisplayFormat(hall ? constant.hallFormat?.[String(hall.format)] : undefined);
+        setHallFormat(hall?.hallFormat);
+        setHallDisplayFormat(hall ? constant.hallFormat?.[String(hall.hallFormat)] : undefined);
+        // Tự động set cinemaId và cinemaName
+        if (hall && hall.cinemaId) {
+            form.setFieldsValue({ cinemaId: hall.cinemaId, cinemaName: hall.cinemaName });
+        } else {
+            form.setFieldsValue({ cinemaId: undefined, cinemaName: '' });
+        }
     };
 
+    // Đồng bộ khi vào edit hoặc khi halls thay đổi
     useEffect(() => {
         const hallId = form.getFieldValue('hallId');
         if (hallId) {
-            const hall = halls.find((h: any) => h.value === hallId);
-            setHallFormat(hall?.format);
-            setHallDisplayFormat(hall ? constant.hallFormat?.[String(hall.format)] : undefined);
+            handleHallChange(hallId);
         } else {
             setHallFormat(undefined);
             setHallDisplayFormat(undefined);
+            form.setFieldsValue({ cinemaId: undefined, cinemaName: '' });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [form, halls]);
 
     // Khi chọn startTime, tự động set endTime
@@ -94,6 +101,14 @@ const ShowTimeForm = ({ form, isEdit = false }: { form: any; isEdit?: boolean })
         }
     }, [form, movies, form.getFieldValue('movieId'), form.getFieldValue('startTime')]);
 
+    // Đồng bộ hallDisplayFormat từ hallFormat trong form (khi vào edit hoặc khi hallFormat thay đổi)
+    useEffect(() => {
+        const hallFormatValue = form.getFieldValue('hallFormat');
+        if (typeof hallFormatValue !== 'undefined') {
+            setHallDisplayFormat(constant.hallFormat?.[String(hallFormatValue)] || '');
+        }
+    }, [form, form.getFieldValue('hallFormat')]);
+
     return (
         <Row gutter={[24, 0]}>
             <Col md={12}>
@@ -122,6 +137,14 @@ const ShowTimeForm = ({ form, isEdit = false }: { form: any; isEdit?: boolean })
             <Col md={12}>
                 <Form.Item label={t('pages:showTimes.form.hallFormat')}>
                     <Input value={hallDisplayFormat} disabled placeholder={t('pages:showTimes.form.hallFormat')} />
+                </Form.Item>
+            </Col>
+            <Col md={24}>
+                <Form.Item
+                    name="cinemaName"
+                    label={t('pages:showTimes.form.cinema')}
+                >
+                    <Input disabled placeholder={t('pages:showTimes.form.cinema')} />
                 </Form.Item>
             </Col>
             <Col md={12}>

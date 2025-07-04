@@ -2,6 +2,7 @@ import Route from '@core/Routes'
 const AuthAdminMiddleware = require('@app/Middlewares/AuthAdminMiddleware')
 
 Route.get("/home", "pages/home").name("frontend.home")
+Route.get("/home/:id", "pages/home/[movieId]").name("frontend.home.detail")
 Route.get("/admin/login", "pages/admin/login").name("frontend.admin.login")
 Route.get("/forgot-password", "pages/admin/forgotPassword").name("frontend.admin.forgotPassword")
 Route.get("/reset-password/:token", "pages/admin/resetPassword").name("frontend.admin.resetPassword")

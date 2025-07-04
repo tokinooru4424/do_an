@@ -23,7 +23,8 @@ export default class MovieController extends BaseController {
             'movies.status',
             'movies.image',
             'movies.createdAt',
-            'movies.updatedAt'
+            'movies.updatedAt',
+            'movies.banner'
         ]
 
         let result = await this.Model.query()
@@ -48,7 +49,8 @@ export default class MovieController extends BaseController {
             realeaseDate: "date",
             rating: "number",
             status: "number",
-            image: "string"
+            image: "string",
+            banner: "string"
         }
         let params = this.validate(inputs, allowFields, { removeNotAllow: true })
         let result = await this.Model.insertOne(params)
@@ -71,7 +73,8 @@ export default class MovieController extends BaseController {
             realeaseDate: "date",
             rating: "number",
             status: "number",
-            image: "string"
+            image: "string",
+            banner: "string"
         }
         let params = this.validate(inputs, allowFields, { removeNotAllow: true })
         const { id } = params

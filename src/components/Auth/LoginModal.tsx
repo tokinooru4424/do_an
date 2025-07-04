@@ -11,9 +11,10 @@ interface LoginModalProps {
     onCancel: () => void;
     onRegisterClick: () => void; // Add prop to handle click on "Đăng ký"
     onForgotPasswordClick: () => void; // Add prop to handle click on "Quên mật khẩu?"
+    onLoginSuccess?: () => void; // New prop for parent to update login state
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ visible, onCancel, onRegisterClick, onForgotPasswordClick }) => {
+const LoginModal: React.FC<LoginModalProps> = ({ visible, onCancel, onRegisterClick, onForgotPasswordClick, onLoginSuccess }) => {
     const [form] = Form.useForm();
     const { notify, redirect, t } = useBaseHook();
     const [loading, setLoading] = useState(false)
@@ -35,7 +36,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ visible, onCancel, onRegisterCl
             }
 
             console.log('Setting auth data:', result);
-            auth().setAuth(result)
+            auth().setAuth(result);
+
+            if (onLoginSuccess) onLoginSuccess(); // Call parent callback
 
             notify(t('messages:message.loginSuccess'))
             redirect('/')
