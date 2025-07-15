@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useState } from 'react';
 import { Layout, Button, Avatar, Dropdown, Menu, Modal } from 'antd';
 import { DownOutlined, UserOutlined, PlayCircleOutlined } from '@ant-design/icons';
@@ -25,12 +26,15 @@ const MovieDetail = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(!!auth().token);
     const [trailerVisible, setTrailerVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
     const [activeLink, setActiveLink] = useState(router.pathname);
     const [showBookingModal, setShowBookingModal] = useState(false);
     const [isRegisterModalVisible, setIsRegisterModalVisible] = useState(false);
     const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
     const [isForgotPasswordModalVisible, setIsForgotPasswordModalVisible] = useState(false);
+    const [movie, setMovie] = useState(null);
+    const [youtubeId, setYoutubeId] = useState(null);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -64,20 +68,26 @@ const MovieDetail = () => {
     );
 
     // Movie detail logic
-    if (!router.isReady) return <div>Đang tải...</div>;
-    const { id } = router.query;
-    let idValue = Array.isArray(id) ? id[0] : id;
-    const movieIdNum = Number(idValue);
-    const shouldFetch = !!idValue && !isNaN(movieIdNum);
-    const { data, error } = useSWR(
-        shouldFetch ? `movie-${movieIdNum}` : null,
-        () => movieService().detail({ id: movieIdNum })
-    );
-    const movie = data;
-    if (error) return <div>Không tìm thấy phim.</div>;
-    if (!movie) return <div>Đang tải...</div>;
+    const getData = async () => {
+        setIsLoading(true);
+        try {
+        const { movieId } = router.query;
+        let movieIdValue = Array.isArray(movieId) ? movieId[0] : movieId;
+        const movie = await movieService().detail({ id: movieIdValue });
+        console.log(movie);
+        setMovie(movie);
+        setYoutubeId(movie?.trailer ? getYoutubeId(movie.trailer) : null);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
+    }
 
-    const youtubeId = movie?.trailer ? getYoutubeId(movie.trailer) : null;
+    useEffect(() => {
+        console.log(router.query);
+        getData();
+    }, [router.query]);
 
     const showRegisterModal = () => {
         setIsRegisterModalVisible(true);
@@ -116,6 +126,10 @@ const MovieDetail = () => {
     };
 
     return (
+        <>
+        {isLoading ? (
+            <div>Đang tải...</div>
+        ) : (
         <div style={{ background: '#181b20', minHeight: '100vh' }}>
             <Header className={`${styles.header} ${isScrolled ? styles.blur : ''}`}>
                 <div className={styles.headerContent}>
@@ -152,7 +166,7 @@ const MovieDetail = () => {
                 </div>
             </Header>
             {/* Banner lớn */}
-            {movie.banner && (
+            {movie?.banner && (
                 <div style={{ width: '100%', height: 350, background: '#000', position: 'relative', overflow: 'hidden' }}>
                     <img
                         src={`${process.env.NEXT_PUBLIC_API_HOST || 'http://localhost:3333'}${movie.banner}`}
@@ -198,7 +212,7 @@ const MovieDetail = () => {
                             )
                         )}
                         <Button type="primary" size="large" style={{ fontWeight: 600, fontSize: 18, borderRadius: 8, height: 48, minWidth: 160 }} onClick={() => setShowBookingModal(true)}>Mua vé ngay</Button>
-                        <BookingModal visible={showBookingModal} onClose={() => setShowBookingModal(false)} movieId={movieIdNum} movie={movie} />
+                        <BookingModal visible={showBookingModal} onClose={() => setShowBookingModal(false)} movieId={movie?.id} movie={movie} />
                         {/* Modal trailer */}
                         <Modal
                             open={trailerVisible}
@@ -240,6 +254,8 @@ const MovieDetail = () => {
                 onCancel={handleForgotPasswordCancel}
             />
         </div>
+        )}
+        </>
     );
 };
 

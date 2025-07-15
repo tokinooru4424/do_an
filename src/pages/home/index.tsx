@@ -114,48 +114,14 @@ const Home = () => {
         </Menu>
     );
 
-    const upcomingMovies = [
-        {
-            id: 5,
-            title: 'BÍ KÍP LUYỆN RỒNG',
-            poster: 'https://via.placeholder.com/300x450?text=Bi+Kip+Luyen+Rong',
-            ageRating: 'P',
-            duration: '98 phút',
-            genre: 'Hoạt hình, Phiêu lưu',
-            country: 'Mỹ',
-            releaseDate: '13/06/2025'
-        },
-        {
-            id: 6,
-            title: 'SUPERMAN',
-            poster: 'https://via.placeholder.com/300x450?text=Superman',
-            ageRating: 'P',
-            duration: '120 phút',
-            genre: 'Hành động, Phiêu lưu',
-            country: 'Mỹ',
-            releaseDate: '11/07/2025'
-        },
-        {
-            id: 7,
-            title: 'PHIM XÌ TRUM',
-            poster: 'https://via.placeholder.com/300x450?text=Phim+Xi+Trum',
-            ageRating: 'P',
-            duration: '90 phút',
-            genre: 'Hoạt hình, Hài',
-            country: 'Mỹ',
-            releaseDate: '18/07/2025'
-        },
-        {
-            id: 8,
-            title: 'THẾ GIỚI KHỦNG LONG: TÁI SINH',
-            poster: 'https://via.placeholder.com/300x450?text=The+Gioi+Khung+Long',
-            ageRating: 'P',
-            duration: '130 phút',
-            genre: 'Hành động, Khoa học viễn tưởng',
-            country: 'Mỹ',
-            releaseDate: '04/07/2025'
-        }
-    ];
+    const { data: movieData, error: movieError } = useSWR(
+        'movies',
+        () => movieService().index({}),
+        { shouldRetryOnError: false }
+    );
+    const movies = movieData?.data || [];
+    const nowShowingMovies = movies.filter(movie => movie.status == 1);
+    const upcomingMovies = movies.filter(movie => movie.status == 3);
 
     const promotions = [
         {
@@ -177,13 +143,6 @@ const Home = () => {
             date: '31/12/2024'
         }
     ];
-
-    const { data: movieData, error: movieError } = useSWR(
-        'movies',
-        () => movieService().index({}),
-        { shouldRetryOnError: false }
-    );
-    const movies = movieData?.data?.filter(movie => movie.status == 1) || [];
 
     return (
         <Layout>
@@ -276,8 +235,8 @@ const Home = () => {
                             <a className={styles.viewAll} href="/lich-chieu">Xem tất cả</a>
                         </div>
                         <div className={styles.movieGrid}>
-                            {movies.length === 0 && <p>Không có phim đang chiếu.</p>}
-                            {movies.map(movie => (
+                            {nowShowingMovies.length === 0 && <p>Không có phim đang chiếu.</p>}
+                            {nowShowingMovies.map(movie => (
                                 <div key={movie.id} className={styles.movieCard} onClick={() => router.push(`/home/${movie.id}`)} style={{ cursor: 'pointer' }}>
                                     <img className={styles.poster} src={movie.image ? `${process.env.NEXT_PUBLIC_API_HOST || 'http://localhost:3333'}${movie.image}` : '/no-image.png'} alt={movie.title} />
                                     <div className={styles.metaTop}>
@@ -298,22 +257,17 @@ const Home = () => {
                             </span>
                         </div>
                         <div className={styles.movieGrid}>
+                            {upcomingMovies.length === 0 && <p>Không có phim sắp chiếu.</p>}
                             {upcomingMovies.map(movie => (
-                                <div key={movie.id} className={styles.movieCard}>
-                                    <div className={styles.poster}>
-                                        <img src={movie.poster} alt={movie.title} />
-                                        <span className={styles.ageRating}>{movie.ageRating}</span>
+                                <div key={movie.id} className={styles.movieCard} onClick={() => router.push(`/home/${movie.id}`)} style={{ cursor: 'pointer' }}>
+                                    <img className={styles.poster} src={movie.image ? `${process.env.NEXT_PUBLIC_API_HOST || 'http://localhost:3333'}${movie.image}` : '/no-image.png'} alt={movie.title} />
+                                    <div className={styles.metaTop}>
+                                        <span className={styles.genre}>{movie.genre}</span>
+                                        <span className={styles.releaseDate}>{movie.realeaseDate ? new Date(movie.realeaseDate).toLocaleDateString('vi-VN') : ''}</span>
                                     </div>
-                                    <div className={styles.info}>
-                                        <h3 className={styles.title}>{movie.title}</h3>
-                                        <div className={styles.meta}>
-                                            <p>{movie.genre} • {movie.duration}</p>
-                                            <p>{movie.country}</p>
-                                            <p>Khởi chiếu: {movie.releaseDate}</p>
-                                        </div>
-                                        <Button type="primary" className={styles.button}>
-                                            Mua vé ngay
-                                        </Button>
+                                    <div className={styles.title}>{movie.title?.toUpperCase()}</div>
+                                    <div className={styles.releaseDate} style={{ color: '#ff9800', fontWeight: 500, marginTop: 4 }}>
+                                        Khởi chiếu: {movie.realeaseDate ? new Date(movie.realeaseDate).toLocaleDateString('vi-VN') : 'Đang cập nhật'}
                                     </div>
                                 </div>
                             ))}

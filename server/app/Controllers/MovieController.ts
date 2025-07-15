@@ -101,7 +101,7 @@ export default class MovieController extends BaseController {
 
     async detail() {
         let inputs = this.request.all()
-        const allowFields = { id: "number!" }
+        const allowFields = { id: "string!" }
         let params = this.validate(inputs, allowFields, { removeNotAllow: true })
 
         let result = await this.Model.query()

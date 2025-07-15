@@ -19,11 +19,6 @@ exports.up = async function (knex) {
         table.renameColumn('updateAt', 'updatedAt');
     });
 
-    // Đổi tên cột cho bảng faqs
-    await knex.schema.alterTable('faqs', function (table) {
-        table.renameColumn('createAt', 'createdAt');
-        table.renameColumn('updateAt', 'updatedAt');
-    });
 };
 
 exports.down = async function (knex) {
@@ -44,8 +39,4 @@ exports.down = async function (knex) {
         table.renameColumn('updatedAt', 'updateAt');
     });
 
-    await knex.schema.alterTable('faqs', function (table) {
-        table.renameColumn('createdAt', 'createAt');
-        table.renameColumn('updatedAt', 'updateAt');
-    });
 }; 

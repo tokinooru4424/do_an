@@ -27,7 +27,8 @@
     "descriptionImage": "Mô tả hình ảnh",
     "descriptonTextForUser": "Tin nhắn cho người dùng",
     "extensionFileImageNotValid": "Image không đúng định dạng cho phép ({{extensionFile}})",
-    "fileUploadNotValid": "Dung lượng file phải nhỏ hơn hoặc bằng {{max}} MB"
+    "fileUploadNotValid": "Dung lượng file phải nhỏ hơn hoặc bằng {{max}} MB",
+    "phoneNumberLength": "Số điện thoại phải có 10 chữ số"
   },
   "message": {
     "loginSuccess": "Đăng nhập thành công",
@@ -97,7 +98,10 @@
     "recordHallDeleted": "Xóa phòng chiếu phim thành công!",
     "recordShowTimeCreated": "Tạo mới phòng chiếu phim thành công!",
     "recordShowTimeUpdated": "Cập nhật phòng chiếu phim thành công!",
-    "recordShowTimeDeleted": "Xóa phòng chiếu phim thành công!"
+    "recordShowTimeDeleted": "Xóa phòng chiếu phim thành công!",
+    "recordMovieCreated": "Tạo mới phim thành công!",
+    "recordMovieUpdated": "Cập nhật phim thành công!",
+    "recordMovieDeleted": "Xóa phim thành công!"
   },
   "confirm": {
     "title": "Xác nhận",
