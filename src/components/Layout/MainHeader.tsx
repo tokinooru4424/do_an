@@ -71,12 +71,12 @@ const MainHeader = () => {
                 </div>
                 <nav className={styles.nav}>
                     <a href="/" className={activeLink === '/' ? styles.active : ''}>Trang chủ</a>
-                    <a href="/lich-chieu" className={activeLink === '/lich-chieu' ? styles.active : ''}>Lịch chiếu</a>
+                    <a href="/showtimes" className={activeLink === '/showtimes' ? styles.active : ''}>Lịch chiếu</a>
                     <a href="/tin-tuc" className={activeLink === '/tin-tuc' ? styles.active : ''}>Tin tức</a>
                     <a href="/khuyen-mai" className={activeLink === '/khuyen-mai' ? styles.active : ''}>Khuyến mãi</a>
                     <a href="/gia-ve" className={activeLink === '/gia-ve' ? styles.active : ''}>Giá vé</a>
                     <a href="/gioi-thieu" className={activeLink === '/gioi-thieu' ? styles.active : ''}>Giới thiệu</a>
-                    {isLoggedIn && Number((user as any)?.roleId) !== 4 && (
+                    {isLoggedIn && (
                         <a onClick={() => redirect("frontend.admin.dashboard.index")} className={activeLink === '/admin/dashboard' ? styles.active : ''}>Quản lý</a>
                     )}
                 </nav>

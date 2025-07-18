@@ -219,7 +219,6 @@ const BookingModal = ({ visible, onClose, movieId, movie }) => {
                     onClose();
                 }}
             />
-            {selectedHall && <pre style={{ color: 'red' }}>selectedHall: {JSON.stringify(selectedHall, null, 2)}</pre>}
         </Modal>
     );
 };
