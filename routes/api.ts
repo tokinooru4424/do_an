@@ -33,8 +33,9 @@ Route.group(() => {
   Route.get("/halls/select2", "HallController.select2").name('halls.select2')
 
     // ---------------------------------- Ticket Routes ---------------------------------------//
-    Route.resource("/tickets", "TicketController").name('tickets')
-    Route.get("/tickets/ticket-info", "TicketController.ticketInfo").name('ticket.ticketInfo');
+    Route.get("/tickets/get-booked-seats", "TicketController.getBookedSeats").name('ticket.getBookedSeats');
+  Route.resource("/tickets", "TicketController").name('tickets')
+  Route.get("/tickets/ticket-info", "TicketController.ticketInfo").name('ticket.ticketInfo');
     // ---------------------------------- End Ticket Routes -----------------------------------//
 
   Route.group(() => {

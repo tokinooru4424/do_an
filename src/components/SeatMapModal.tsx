@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Button } from 'antd';
+import TicketService from '../services/ticketService';
 
 // seatConfig: { totalSeat, seatInRow, seatInColumn }
 // seatTypes: { [seatLabel]: 'normal' | 'vip' | 'double' | 'booked' }
@@ -14,6 +15,23 @@ const SeatMapModal = ({ visible, onClose, seatConfig, selectedSeats = [], onSele
 
     // Countdown timer (10 phút = 600 giây)
     const [secondsLeft, setSecondsLeft] = useState(600);
+    const [bookedSeats, setBookedSeats] = useState<string[]>([]);
+
+    useEffect(() => {
+        console.log('SeatMapModal showTimeId:', seatConfig?.showTimeId);
+        if (!visible || !seatConfig?.showTimeId) return;
+        TicketService().getBookedSeats({ showTimeId: seatConfig.showTimeId })
+            .then(res => {
+                const uniqueSeats = Array.from(new Set(res.bookedSeats)) as string[];
+                console.log('bookedSeats:', uniqueSeats);
+                setBookedSeats(uniqueSeats);
+            })
+            .catch(() => setBookedSeats([]));
+    }, [visible, seatConfig?.showTimeId]);
+
+    const isBooked = (seatLabel: string) =>
+  bookedSeats.map(s => s.trim().toUpperCase()).includes(seatLabel.trim().toUpperCase());
+
     useEffect(() => {
         if (!visible) return;
         setSecondsLeft(600);
@@ -62,6 +80,7 @@ const SeatMapModal = ({ visible, onClose, seatConfig, selectedSeats = [], onSele
     };
     const totalPrice = selectedSeats.reduce((sum, seat) => sum + getSeatPrice(seat), 0);
 
+    console.log('SeatMapModal render', { seatConfig, seatInRow, seatInColumn, bookedSeats });
     // Render lưới ghế
     return (
         <Modal
@@ -105,9 +124,14 @@ const SeatMapModal = ({ visible, onClose, seatConfig, selectedSeats = [], onSele
                     <div key={rowIdx} style={{ display: 'flex', gap: 8 }}>
                         {Array.from({ length: seatInRow }).map((_, colIdx) => {
                             const seatLabel = getSeatLabel(rowIdx, colIdx);
+                            const booked = isBooked(seatLabel);
+                            console.log('seatLabel:', seatLabel, 'isBooked:', booked, 'bookedSeats:', bookedSeats);
                             let bg = '#23272f', color = '#fff', border = '2px solid #23272f';
                             let content: React.ReactNode = seatLabel;
-                            const type = autoSeatTypes[seatLabel] || 'normal';
+                            // Đánh dấu ghế đã đặt
+                            const type = isBooked(seatLabel)
+                                ? 'booked'
+                                : autoSeatTypes[seatLabel] || 'normal';
                             if (type === 'booked') {
                                 bg = '#444'; color = '#fff';
                                 content = <span style={{ fontSize: 22, fontWeight: 700, color: '#fff', lineHeight: '48px' }}>×</span>;
@@ -119,14 +143,14 @@ const SeatMapModal = ({ visible, onClose, seatConfig, selectedSeats = [], onSele
                             return (
                                 <Button
                                     key={seatLabel}
-                                    disabled={type === 'booked'}
+                                    disabled={booked}
                                     style={{
                                         width: 48, height: 48, fontWeight: 600, fontSize: 16, borderRadius: 8,
                                         background: bg, color, border, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center'
                                     }}
                                     onClick={() => onSelectSeat && onSelectSeat(seatLabel)}
                                 >
-                                    {content}
+                                    {booked ? <span style={{ fontSize: 22, fontWeight: 700, color: '#fff', lineHeight: '48px' }}>×</span> : seatLabel}
                                 </Button>
                             );
                         })}

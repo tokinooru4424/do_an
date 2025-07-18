@@ -58,6 +58,14 @@ class TicketService extends Base {
       data: data,
     });
   };
+
+  getBookedSeats = async (data: any) => {
+    return this.request({
+      url: `/api/v1/${name}/get-booked-seats`,
+      method: 'GET',
+      data: data,
+    });
+  };
 }
 
 export default () => new TicketService(); 

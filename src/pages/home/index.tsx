@@ -49,13 +49,6 @@ const Home = () => {
         };
     }, [router.events]);
 
-    useEffect(() => {
-        fetch('http://localhost:3333/api/v1/movies')
-            .then(res => res.json())
-            .then(data => console.log('Test fetch:', data))
-            .catch(err => console.error('Test fetch error:', err));
-    }, []);
-
     const showRegisterModal = () => {
         setIsRegisterModalVisible(true);
         setIsLoginModalVisible(false);
@@ -124,26 +117,6 @@ const Home = () => {
     const nowShowingMovies = movies.filter(movie => movie.status == 1);
     const upcomingMovies = movies.filter(movie => movie.status == 3);
 
-    const promotions = [
-        {
-            id: 1,
-            title: 'Chương trình tặng quà nhân dịp mùng 8 tháng 3 !!!',
-            image: 'https://via.placeholder.com/400x200?text=8+3',
-            date: '04/03/2025'
-        },
-        {
-            id: 2,
-            title: 'GÀ RÁN SIÊU MÊ LY ĐỒNG GIÁ CHỈ 79K CÁC SET GÀ RÁN',
-            image: 'https://via.placeholder.com/400x200?text=Ga+Ran',
-            date: '31/01/2025'
-        },
-        {
-            id: 3,
-            title: 'TƯNG BỪNG ƯU ĐÃI năm 2025 tại Trung tâm Chiếu phim Quốc gia',
-            image: 'https://via.placeholder.com/400x200?text=Uu+Dai+2025',
-            date: '31/12/2024'
-        }
-    ];
 
     return (
         <Layout>
@@ -215,26 +188,6 @@ const Home = () => {
                                     <div className={styles.title}>{movie.title?.toUpperCase()}</div>
                                     <div className={styles.releaseDate} style={{ color: '#ff9800', fontWeight: 500, marginTop: 4 }}>
                                         Khởi chiếu: {movie.realeaseDate ? new Date(movie.realeaseDate).toLocaleDateString('vi-VN') : 'Đang cập nhật'}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
-
-                    <section className={styles.section}>
-                        <div className={styles.sectionHeader}>
-                            <h2>KHUYẾN MÃI</h2>
-                            <span className={styles.viewAll}>
-                                Xem tất cả <RightOutlined />
-                            </span>
-                        </div>
-                        <div className={styles.promotionGrid}>
-                            {promotions.map(promotion => (
-                                <div key={promotion.id} className={styles.promotionCard}>
-                                    <img src={promotion.image} alt={promotion.title} />
-                                    <div className={styles.content}>
-                                        <h3 className={styles.title}>{promotion.title}</h3>
-                                        <p className={styles.date}>{promotion.date}</p>
                                     </div>
                                 </div>
                             ))}

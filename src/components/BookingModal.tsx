@@ -30,10 +30,8 @@ const BookingModal = ({ visible, onClose, movieId, movie }) => {
     // Lọc suất chiếu theo ngày được chọn
     const filteredShowtimes = useMemo(() => {
         // So sánh ngày local
-        console.log('selectedDate (local):', selectedDate);
         showtimes.forEach(st => {
             const dateStr = new Date(st.startTime).toLocaleDateString('en-CA');
-            console.log('showtimeId:', st.id, 'startTime:', st.startTime, 'dateStr (local):', dateStr);
         });
         return showtimes.filter(st => {
             if (!st.startTime) return false;
@@ -79,6 +77,18 @@ const BookingModal = ({ visible, onClose, movieId, movie }) => {
         return 70000;
     };
     const totalPrice = selectedSeats.reduce((sum, seat) => sum + getSeatPrice(seat), 0);
+
+    console.log('BookingModal render', {
+        selectedHall,
+        selectedShowtime,
+        seatConfig: selectedHall && {
+            totalSeat: selectedHall.totalSeat,
+            seatInRow: selectedHall.seatInRow,
+            seatInColumn: selectedHall.seatInColumn,
+            showTimeId: selectedShowtime?.id,
+        },
+        seatModalOpen
+    });
 
     return (
         <Modal
@@ -137,10 +147,11 @@ const BookingModal = ({ visible, onClose, movieId, movie }) => {
             <SeatMapModal
                 visible={seatModalOpen}
                 onClose={() => setSeatModalOpen(false)}
-                seatConfig={selectedHall && {
-                    totalSeat: selectedHall.totalSeat,
-                    seatInRow: selectedHall.seatInRow,
-                    seatInColumn: selectedHall.seatInColumn,
+                seatConfig={{
+                    totalSeat: selectedHall?.totalSeat,
+                    seatInRow: selectedHall?.seatInRow,
+                    seatInColumn: selectedHall?.seatInColumn,
+                    showTimeId: selectedShowtime?.id,
                 }}
                 selectedSeats={selectedSeats}
                 onSelectSeat={(seatNum) => {
@@ -199,12 +210,9 @@ const BookingModal = ({ visible, onClose, movieId, movie }) => {
                     };
                     localStorage.setItem('paymentData', JSON.stringify(paymentData));
 
-                    // Đảm bảo movieId, showtimeId, hallId là số hợp lệ
-                    console.log('DEBUG:', { movieId, selectedShowtime, selectedHall });
-                    console.log('movieId:', movieId, 'selectedShowtime?.id:', selectedShowtime?.id, 'selectedHall?.id:', selectedHall?.id);
                     const movieIdNum = Number(movieId);
                     const showtimeIdNum = Number(selectedShowtime?.id);
-                    const hallIdNum = Number(selectedHall?.value); // Sửa ở đây: dùng value thay cho id
+                    const hallIdNum = Number(selectedHall?.value);
                     if (
                         isNaN(movieIdNum) || movieIdNum <= 0 ||
                         isNaN(showtimeIdNum) || showtimeIdNum <= 0 ||

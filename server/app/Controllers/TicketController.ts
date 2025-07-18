@@ -108,4 +108,22 @@ export default class TicketController extends BaseController {
             throw new ApiException(500, 'Internal server error');
         }
     }
+
+    async getBookedSeats({ request }) {
+        const { showTimeId } = request.query;
+        if (!showTimeId) throw new ApiException(400, 'Thiếu showTimeId');
+
+        // Lấy tất cả ticket của suất chiếu này
+        const tickets = await TicketModel.query().where('showTimeId', showTimeId);
+
+        // Trả về mảng các ghế đã đặt
+        let bookedSeats = [];
+        tickets.forEach((ticket: any) => {
+            if (ticket.seatNumber) {
+                bookedSeats = bookedSeats.concat(ticket.seatNumber.split(','));
+            }
+        });
+
+        return { bookedSeats };
+    }
 }
