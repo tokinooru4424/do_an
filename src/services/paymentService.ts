@@ -1,33 +1,42 @@
-import axios from 'axios';
+import Base from "./baseService";
 
-class PaymentService {
-    private baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api/v1';
-
-    async createMomoPayment(data: {
+class PaymentService extends Base {
+    createMomoPayment = async (data: {
         amount: number;
         orderInfo: string;
         returnUrl: string;
         notifyUrl: string;
         orderId: string;
-    }) {
-        try {
-            const response = await axios.post(`${this.baseURL}/payment/momo/create`, data);
-            return response.data;
-        } catch (error) {
-            console.error('Lỗi tạo thanh toán MoMo:', error);
-            throw error;
-        }
-    }
+    }) => {
+        return this.request({
+            url: "/api/v1/payment/momo/create",
+            method: "POST",
+            data: data,
+        });
+    };
 
-    async getPaymentStatus(orderId: string) {
-        try {
-            const response = await axios.get(`${this.baseURL}/payment/status/${orderId}`);
-            return response.data;
-        } catch (error) {
-            console.error('Lỗi lấy trạng thái thanh toán:', error);
-            throw error;
-        }
-    }
+    getPaymentStatus = async (orderId: string) => {
+        return this.request({
+            url: `/api/v1/payment/status/${orderId}`,
+            method: "GET",
+        });
+    };
+
+    saveFromFrontend = async (data: any) => {
+        return this.request({
+            url: "/api/v1/payment/momo/save",
+            method: "POST",
+            data: data,
+        });
+    };
+
+    edit = async (data: { id: number, ticketId: number }) => {
+        return this.request({
+            url: `/api/v1/payments/${data.id}`,
+            method: "PUT",
+            data: data,
+        });
+    };
 }
 
-export default PaymentService; 
+export default () => new PaymentService(); 

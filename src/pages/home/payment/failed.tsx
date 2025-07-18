@@ -3,6 +3,7 @@ import { Result, Button, Card, Typography, Layout } from 'antd';
 import { CloseCircleOutlined, HomeOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import styles from '@src/scss/pages/Home.module.scss';
+import MainHeader from '@src/components/Layout/MainHeader';
 
 const { Title, Text } = Typography;
 const { Header, Footer } = Layout;
@@ -39,13 +40,7 @@ const PaymentFailedPage = () => {
 
     return (
         <div style={{ background: '#181b20', minHeight: '100vh' }}>
-            <Header className={styles.header}>
-                <div className={styles.headerContent}>
-                    <div className={styles.logo}>
-                        <img src="/logo/logo.png" alt="Logo" style={{ cursor: 'pointer' }} onClick={() => router.push('/')} />
-                    </div>
-                </div>
-            </Header>
+            <MainHeader />
 
             <div style={{
                 minHeight: 'calc(100vh - 64px)',

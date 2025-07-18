@@ -10,5 +10,6 @@
   "9996": "Wrong parameters",
   "9997": "Not access",
   "9998": "Login require!",
-  "9999": "An unknown error"
+  "9999": "An unknown error",
+  "6303": "Cannot create or update a showtime with a start time in the past!"
 }

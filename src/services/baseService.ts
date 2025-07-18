@@ -112,11 +112,11 @@ class BaseService {
     }
 
     if (!response.ok) {
-      if ([401].indexOf(response.status) !== -1) {
-        // auto logout if 401 Unauthorized or 403 Forbidden response returned from api
-        auth().logout();
-        location.href = "/"
-      }
+      // Bỏ hoặc comment đoạn auto logout này nếu không muốn logout tự động
+      // if ([401].indexOf(response.status) !== -1) {
+      //   auth().logout();
+      //   location.href = "/"
+      // }
       const error = data || (data && data.message) || response.statusText;
       return Promise.reject(error);
     }

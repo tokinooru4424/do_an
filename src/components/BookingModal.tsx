@@ -153,23 +153,72 @@ const BookingModal = ({ visible, onClose, movieId, movie }) => {
                 startTime={selectedShowtime ? new Date(selectedShowtime.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''}
                 roomName={selectedHall?.name || selectedHall?.label || ''}
                 onPayment={() => {
-                    // Lưu toàn bộ dữ liệu vào localStorage
+                    // Sinh lại autoSeatTypes giống logic ở SeatMapModal
+                    let autoSeatTypes = {};
+                    if (selectedHall && selectedHall.totalSeat && selectedHall.seatInRow && selectedHall.seatInColumn) {
+                        const totalSeat = selectedHall.totalSeat;
+                        const seatInRow = selectedHall.seatInRow;
+                        const seatInColumn = selectedHall.seatInColumn;
+                        const isBig = totalSeat >= 100;
+                        const vipRowStart = isBig ? 3 : 2;
+                        const vipRowEnd = seatInColumn - 1;
+                        const vipColStart = isBig ? 2 : 1;
+                        const vipColEnd = seatInRow - (isBig ? 2 : 1);
+                        const getSeatLabel = (rowIdx, colIdx) => {
+                            const rowChar = String.fromCharCode(65 + rowIdx);
+                            return `${rowChar}${colIdx + 1}`;
+                        };
+                        for (let row = vipRowStart; row < vipRowEnd; row++) {
+                            for (let col = vipColStart; col < vipColEnd; col++) {
+                                const seatLabel = getSeatLabel(row, col);
+                                autoSeatTypes[seatLabel] = 'vip';
+                            }
+                        }
+                    }
+                    // Mapping từng ghế đã chọn
+                    const seatTypes = {};
+                    selectedSeats.forEach(seat => {
+                        seatTypes[seat] = autoSeatTypes[seat] || 'normal';
+                    });
+
+                    // TÍNH LẠI TỔNG TIỀN DỰA TRÊN seatTypes
+                    const totalPrice = selectedSeats.reduce((sum, seat) => {
+                        const type = seatTypes[seat];
+                        const price = type === 'vip' ? 80000 : 70000;
+                        return sum + price;
+                    }, 0);
+
                     const paymentData = {
                         selectedSeats,
-                        seatTypes: selectedHall?.autoSeatTypes || {},
+                        seatTypes, // <-- Đảm bảo không bị rỗng và đúng loại ghế!
                         movie,
                         showtime: selectedShowtime,
                         cinema: cinemas.find(c => (c.value || c.id) === (selectedShowtime?.cinemaId || selectedShowtime?.cinema?.id)) || {},
                         hall: selectedHall || {},
-                        totalPrice,
+                        totalPrice, // <-- Đảm bảo luôn đúng!
                     };
                     localStorage.setItem('paymentData', JSON.stringify(paymentData));
+
+                    // Đảm bảo movieId, showtimeId, hallId là số hợp lệ
+                    console.log('DEBUG:', { movieId, selectedShowtime, selectedHall });
+                    console.log('movieId:', movieId, 'selectedShowtime?.id:', selectedShowtime?.id, 'selectedHall?.id:', selectedHall?.id);
+                    const movieIdNum = Number(movieId);
+                    const showtimeIdNum = Number(selectedShowtime?.id);
+                    const hallIdNum = Number(selectedHall?.value); // Sửa ở đây: dùng value thay cho id
+                    if (
+                        isNaN(movieIdNum) || movieIdNum <= 0 ||
+                        isNaN(showtimeIdNum) || showtimeIdNum <= 0 ||
+                        isNaN(hallIdNum) || hallIdNum <= 0
+                    ) {
+                        alert('Không xác định được thông tin phim, suất chiếu hoặc phòng chiếu!');
+                        return;
+                    }
                     router.push({
                         pathname: '/home/payment',
                         query: {
-                            movieId,
-                            showtimeId: selectedShowtime?.id,
-                            hallId: selectedHall?.id,
+                            movieId: movieIdNum,
+                            showtimeId: showtimeIdNum,
+                            hallId: hallIdNum,
                         }
                     });
                     onClose();

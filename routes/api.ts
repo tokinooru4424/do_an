@@ -14,6 +14,7 @@ Route.group(() => {
   Route.post("/forgotPassword", "AuthController.forgotPassword").name('auth.forgotPassword')
   Route.get("/checkToken/:token", "AuthController.checkToken").name('auth.checkToken')
   Route.post("/resetPassword", "AuthController.resetPassword").name('auth.resetPassword')
+  Route.post("/register", "AuthController.register").name('auth.register')
 
   // ---------------------------------- End Auth Routes -----------------------------------//
 
@@ -30,6 +31,11 @@ Route.group(() => {
   Route.get("/cinemas/select2", "CinemaController.select2").name('cinemas.select2')
   Route.get("/showtimes", "ShowTimeController.index").name('showtimes.index')
   Route.get("/halls/select2", "HallController.select2").name('halls.select2')
+
+    // ---------------------------------- Ticket Routes ---------------------------------------//
+    Route.resource("/tickets", "TicketController").name('tickets')
+    Route.get("/tickets/ticket-info", "TicketController.ticketInfo").name('ticket.ticketInfo');
+    // ---------------------------------- End Ticket Routes -----------------------------------//
 
   Route.group(() => {
     Route.post("/changePassword", "AuthController.changePassword").name("auth.changePassword")
@@ -110,9 +116,15 @@ Route.group(() => {
 
   // ---------------------------------- Payment Routes ---------------------------------------//
   Route.post("/payment/momo/create", "PaymentController.createMomoPayment").name('payment.momo.create')
-  Route.post("/payment/momo/callback", "PaymentController.momoCallback").name('payment.momo.callback')
+  Route.post("/payment/momo/save", "PaymentController.saveFromFrontend").name('payment.momo.save')
   Route.get("/payment/momo/return", "PaymentController.momoReturn").name('payment.momo.return')
+  // Route thanh toán VNPay
+  Route.post("/payment/vnpay/create", "PaymentController.createVnpayPayment").name('payment.vnpay.create')
+  Route.get("/payment/vnpay/return", "PaymentController.vnpayReturn").name('payment.vnpay.return')
+  Route.put("/payments/:id", "PaymentController.update").name('payments.update');
+
   // ---------------------------------- End Payment Routes -----------------------------------//
+
 
 }).middleware([ExtendMiddleware]).name('api').prefix("/api/v1")
 

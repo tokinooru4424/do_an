@@ -1,46 +1,85 @@
 import React, { useEffect, useState } from 'react';
-import { Result, Button, Card, Typography, Layout } from 'antd';
+import { Result, Button, Card, Typography,Dropdown, Avatar, Layout } from 'antd';
 import { CheckCircleOutlined, HomeOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import styles from '@src/scss/pages/Home.module.scss';
+import PaymentService from '@src/services/paymentService';
+import TicketService from '@src/services/ticketService';
+import useBaseHook from '@src/hooks/BaseHook';
+import { UserOutlined, DownOutlined } from '@ant-design/icons';
+import MainHeader from '@src/components/Layout/MainHeader';
 
 const { Title, Text } = Typography;
 const { Header, Footer } = Layout;
 
 const PaymentSuccessPage = () => {
     const router = useRouter();
-    const [orderData, setOrderData] = useState(null);
+    const [ticketInfo, setTicketInfo] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Lấy thông tin đơn hàng từ URL params hoặc localStorage
-        const { orderId, transId } = router.query;
-        const savedOrder = localStorage.getItem('currentOrder');
-
-        if (savedOrder) {
-            try {
-                setOrderData(JSON.parse(savedOrder));
-            } catch (e) {
-                console.error('Lỗi parse order data:', e);
+        // Lấy paymentData từ localStorage
+        let paymentData = null;
+        if (typeof window !== 'undefined') {
+            const raw = localStorage.getItem('paymentData');
+            if (raw) {
+                try {
+                    paymentData = JSON.parse(raw);
+                } catch (e) {}
             }
+        }
+        const {
+            partnerCode, orderId, requestId, orderInfo, orderType,
+            transId, resultCode, message, payType, responseTime, extraData, signature
+        } = router.query;
+        // Lấy đúng amount từ paymentData
+        const amount = paymentData?.totalPrice || 0;
+        if (orderId && amount > 0) {
+            PaymentService().saveFromFrontend({
+                partnerCode, orderId, requestId, amount, orderInfo, orderType,
+                transId, resultCode, message, payType, responseTime, extraData, signature
+            })
+            .then(async (paymentRes) => {
+                // Lấy paymentId trả về từ backend
+                const paymentId = paymentRes.id;
+                // Sau khi lưu payment thành công, tạo ticket với đúng thông tin
+                const ticketData = {
+                    showTimeId: paymentData?.showtime?.id,
+                    movieId: paymentData?.showtime?.movieId,
+                    userId: paymentData?.userId || 1, // Nếu có userId trong paymentData, nếu không thì để 1 hoặc lấy từ auth
+                    bookingTime: new Date().toISOString(),
+                    seatNumber: paymentData?.selectedSeats?.join(','),
+                    format: paymentData?.hall?.hallFormat,
+                    price: amount,
+                    paymentId: paymentId // Gán paymentId cho ticket
+                };
+                try {
+                    await TicketService().create(ticketData);   
+                    await TicketService().ticketInfo({
+                        paymentId: paymentId
+                    }).then(async (ticketRes) => {
+                        setTicketInfo(ticketRes);
+                        setLoading(false);
+                    });
+                } catch (err) {
+                    console.error('Lỗi tạo ticket:', err);
+                }
+            })
+            .catch(err => {
+                // Xử lý khi lưu payment thất bại
+                console.error('Lỗi lưu payment:', err);
+            });
         }
     }, [router.query]);
 
     const handleGoHome = () => {
-        // Xóa dữ liệu đơn hàng khỏi localStorage
-        localStorage.removeItem('currentOrder');
-        localStorage.removeItem('paymentData');
         router.push('/');
     };
 
     return (
         <div style={{ background: '#181b20', minHeight: '100vh' }}>
-            <Header className={styles.header}>
-                <div className={styles.headerContent}>
-                    <div className={styles.logo}>
-                        <img src="/logo/logo.png" alt="Logo" style={{ cursor: 'pointer' }} onClick={() => router.push('/')} />
-                    </div>
-                </div>
-            </Header>
+            <MainHeader />
 
             <div style={{
                 minHeight: 'calc(100vh - 64px)',
@@ -91,22 +130,27 @@ const PaymentSuccessPage = () => {
                         ]}
                     />
 
-                    {orderData && (
+                    {loading && <div style={{ color: '#fff', marginTop: 24 }}>Đang tải thông tin vé...</div>}
+                    {error && <div style={{ color: 'red', marginTop: 24 }}>{error}</div>}
+                    {ticketInfo && ticketInfo.ticket && ticketInfo.showTime && ticketInfo.movie && ticketInfo.hall && ticketInfo.cinema && (
                         <div style={{
                             marginTop: 32,
                             padding: 24,
                             background: 'rgba(255,255,255,0.05)',
                             borderRadius: 12,
-                            textAlign: 'left'
+                            textAlign: 'left',
+                            color: '#fff'
                         }}>
                             <Title level={4} style={{ color: '#fff', marginBottom: 16 }}>
-                                Thông tin đơn hàng
+                                Thông tin vé xem phim
                             </Title>
-                            <div style={{ color: '#ccc', lineHeight: 1.8 }}>
-                                <div><strong>Mã đơn hàng:</strong> {orderData.orderId}</div>
-                                <div><strong>Giao dịch:</strong> {router.query.transId || 'N/A'}</div>
-                                <div><strong>Thời gian:</strong> {new Date().toLocaleString('vi-VN')}</div>
-                            </div>
+                            <div><strong>Phim:</strong> {ticketInfo.movie.title}</div>
+                            <div><strong>Suất chiếu:</strong> {new Date(ticketInfo.showTime.startTime).toLocaleString('vi-VN')}</div>
+                            <div><strong>Rạp:</strong> {ticketInfo.cinema.name}</div>
+                            <div><strong>Phòng chiếu:</strong> {ticketInfo.hall.name}</div>
+                            <div><strong>Ghế:</strong> {ticketInfo.ticket.seatNumber}</div>
+                            <div><strong>Giá vé:</strong> {ticketInfo.payment.cost} VNĐ</div>
+                            <div><strong>Thời gian thanh toán:</strong> {new Date(ticketInfo.payment.paymentTime).toLocaleString('vi-VN')}</div>
                         </div>
                     )}
                 </Card>

@@ -10,18 +10,25 @@ class AuthApiMiddleware extends BaseMiddleware {
   cookies: any
   constructor(request, response, next) {
     super(request, response, next);
+    console.log('--- [AuthApiMiddleware] ---');
+    console.log('Path:', request.path);
+    console.log('Headers:', request.headers);
     let cookie: any = this.getBearerTokenFromHeader(request)
     if (cookie.error) {
+      console.log('AuthApiMiddleware: Missing or invalid token');
       cookie = nextCookie({
         req: this.request
       })
     }
     this.cookies = new Cookies(cookie);
     this.checkToken().then(res => {
-      if (res.error) return response.status(401).json({ code: 401, error: res.error })
+      if (res.error) {
+        console.log('AuthApiMiddleware: checkToken error:', res.error);
+        return response.status(401).json({ code: 401, error: res.error })
+      }
       next();
     }).catch(err => {
-      console.log(err)
+      console.log('AuthApiMiddleware: catch error:', err)
       return response.status(401).json({ code: 401, error: err })
     })
   }

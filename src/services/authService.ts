@@ -52,6 +52,14 @@ class AuthService extends Base {
       data: data,
     });
   }
+
+  register = async ({ email, password, name, username, phoneNumber, birthday }: { email: string; password: string; name: string; username: string; phoneNumber: string; birthday: string }) => {
+    return this.request({
+      url: "/api/v1/register",
+      method: "POST",
+      data: { email, password, name, username, phoneNumber, birthday },
+    });
+  };
 }
 
 export default () => new AuthService();

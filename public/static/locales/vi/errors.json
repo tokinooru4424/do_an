@@ -43,5 +43,6 @@
   "6201": "Phòng chiếu không tồn tại!",
   "6301": "Suất chiếu không tồn tại!",
   "6302": "Đã có suất chiếu khác trong phòng này trùng thời gian!",
+  "6303": "Không thể tạo hoặc cập nhật suất chiếu với thời gian trong quá khứ!",
   "6401": "Phim không tồn tại!"
 }

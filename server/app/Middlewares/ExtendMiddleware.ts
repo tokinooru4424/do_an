@@ -1,5 +1,6 @@
 import BaseMiddleware from './BaseMiddleware'
 import Logger from '@core/Logger'
+import stringify from 'safe-stable-stringify';
 
 const logger = Logger('api');
 
@@ -67,10 +68,17 @@ class ExtendMiddleware extends BaseMiddleware {
       })}`)
       return;
     }
-    logger.info(`RESPONSE [${this.response.requestId}][OK] ${JSON.stringify({
-      data: data
-    })}`)
+    let logData;
+    try {
+      logData = JSON.stringify({ data });
+    } catch (e) {
+      logData = '[Circular structure]';
+    }
+    logger.info(`RESPONSE [${this.response.requestId}][OK] ${logData}`);
     this.response.sent = 1;
+    if (data && data.constructor && data.constructor.name === 'ServerResponse') {
+      console.error('GỌI SUCCESS VỚI ServerResponse!', new Error().stack);
+    }
     this.response.json({
       code: 200,
       data: data
@@ -105,12 +113,13 @@ class ExtendMiddleware extends BaseMiddleware {
       })}`)
       return;
     }
-    logger.info(`RESPONSE [${this.response.requestId}][ERROR] ${JSON.stringify({
-      errorCode: errorCode,
-      error: err,
-      info: info,
-      httpCode: httpCode
-    })}`)
+    let logData;
+    try {
+      logData = JSON.stringify({ errorCode, error: err, info, httpCode });
+    } catch (e) {
+      logData = '[Circular structure]';
+    }
+    logger.info(`RESPONSE [${this.response.requestId}][ERROR] ${logData}`);
     this.handleError(errorCode, err, info, httpCode);
   }
 

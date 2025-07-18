@@ -12,6 +12,7 @@ import BookingModal from '@src/components/BookingModal';
 import RegisterModal from '@src/components/Auth/RegisterModal';
 import LoginModal from '@src/components/Auth/LoginModal';
 import ForgotPasswordModal from '@src/components/Auth/ForgotPasswordModal';
+import MainHeader from '@src/components/Layout/MainHeader';
 
 const { Header } = Layout;
 
@@ -22,7 +23,7 @@ const getYoutubeId = (url) => {
 };
 
 const MovieDetail = () => {
-    const { t, redirect } = useBaseHook();
+    const { redirect } = useBaseHook();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(!!auth().token);
     const [trailerVisible, setTrailerVisible] = useState(false);
@@ -68,15 +69,12 @@ const MovieDetail = () => {
     );
 
     // Movie detail logic
-    const getData = async () => {
+    const getData = async (movieIdNum) => {
         setIsLoading(true);
         try {
-        const { movieId } = router.query;
-        let movieIdValue = Array.isArray(movieId) ? movieId[0] : movieId;
-        const movie = await movieService().detail({ id: movieIdValue });
-        console.log(movie);
-        setMovie(movie);
-        setYoutubeId(movie?.trailer ? getYoutubeId(movie.trailer) : null);
+            const movie = await movieService().detail({ id: movieIdNum });
+            setMovie(movie);
+            setYoutubeId(movie?.trailer ? getYoutubeId(movie.trailer) : null);
         } catch (error) {
             console.log(error);
         } finally {
@@ -85,8 +83,10 @@ const MovieDetail = () => {
     }
 
     useEffect(() => {
-        console.log(router.query);
-        getData();
+        const { movieId } = router.query;
+        const movieIdNum = Number(movieId);
+        if (!movieId || isNaN(movieIdNum) || movieIdNum <= 0) return;
+        getData(movieIdNum);
     }, [router.query]);
 
     const showRegisterModal = () => {
@@ -125,46 +125,13 @@ const MovieDetail = () => {
         setIsLoginModalVisible(false);
     };
 
+    if (isLoading) return <div>Đang tải...</div>;
+    if (!movie) return <div>Không tìm thấy phim</div>;
+
     return (
         <>
-        {isLoading ? (
-            <div>Đang tải...</div>
-        ) : (
         <div style={{ background: '#181b20', minHeight: '100vh' }}>
-            <Header className={`${styles.header} ${isScrolled ? styles.blur : ''}`}>
-                <div className={styles.headerContent}>
-                    <div className={styles.logo}>
-                        <img src="/logo/logo.png" alt="Logo" style={{ cursor: 'pointer' }} onClick={() => router.push('/')} />
-                    </div>
-                    <nav className={styles.nav}>
-                        <a href="/" className={activeLink === '/' ? styles.active : ''}>Trang chủ</a>
-                        <a href="/lich-chieu" className={activeLink === '/lich-chieu' ? styles.active : ''}>Lịch chiếu</a>
-                        <a href="/tin-tuc" className={activeLink === '/tin-tuc' ? styles.active : ''}>Tin tức</a>
-                        <a href="/khuyen-mai" className={activeLink === '/khuyen-mai' ? styles.active : ''}>Khuyến mãi</a>
-                        <a href="/gia-ve" className={activeLink === '/gia-ve' ? styles.active : ''}>Giá vé</a>
-                        <a href="/gioi-thieu" className={activeLink === '/gioi-thieu' ? styles.active : ''}>Giới thiệu</a>
-                        {isLoggedIn && (
-                            <a onClick={() => redirect("frontend.admin.dashboard.index")} className={activeLink === '/admin/dashboard' ? styles.active : ''}>Quản lý</a>
-                        )}
-                    </nav>
-                    <div className={styles.authButtons}>
-                        {!isLoggedIn ? (
-                            <>
-                                <Button className={styles.signupButton} onClick={showRegisterModal}>Đăng ký</Button>
-                                <Button type="primary" className={styles.loginButton} onClick={showLoginModal}>Đăng nhập</Button>
-                            </>
-                        ) : (
-                            <Dropdown overlay={menu} trigger={['click']}>
-                                <span style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', color: '#fff' }}>
-                                    <Avatar icon={<UserOutlined />} style={{ marginRight: 8 }} />
-                                    {user?.firstName || user?.username || 'User'}
-                                    <DownOutlined style={{ marginLeft: 8 }} />
-                                </span>
-                            </Dropdown>
-                        )}
-                    </div>
-                </div>
-            </Header>
+            <MainHeader />
             {/* Banner lớn */}
             {movie?.banner && (
                 <div style={{ width: '100%', height: 350, background: '#000', position: 'relative', overflow: 'hidden' }}>
@@ -254,7 +221,6 @@ const MovieDetail = () => {
                 onCancel={handleForgotPasswordCancel}
             />
         </div>
-        )}
         </>
     );
 };

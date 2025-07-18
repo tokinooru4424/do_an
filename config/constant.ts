@@ -48,7 +48,17 @@ const movieStatus = {
   "3": "Chưa hoạt động"
 }
 
+const paymentStatus = {
+  "0": "Thất bại",
+  "1": "Thành công"
+}
+
+const paymentType = {
+  "1": "Momo",
+  "2": "VNPay"
+}
+
 export default {
-  roleKey, numberInMonth, numberInMonthProfit, hallFormat, movieStatus
+  roleKey, numberInMonth, numberInMonthProfit, hallFormat, movieStatus, paymentStatus, paymentType
 }
 

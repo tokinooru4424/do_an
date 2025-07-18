@@ -203,4 +203,41 @@ export default class AuthController extends BaseController {
       token: tokenNew
     }
   }
+
+  async register() {
+    const inputs = this.request.all();
+    const allowFields = {
+      email: "string!",
+      password: "string!",
+      name: "string!",
+      username: "string!",
+      phoneNumber: "string!",
+      birthday: "string!"
+    };
+    const data = this.validate(inputs, allowFields, { removeNotAllow: true });
+
+    // Kiểm tra email hoặc username đã tồn tại chưa
+    const existedEmail = await this.Model.getOne({ email: data.email });
+    if (existedEmail) throw new ApiException(6007, "Email đã được sử dụng!");
+    const existedUsername = await this.Model.getOne({ username: data.username });
+    if (existedUsername) throw new ApiException(6009, "Tên tài khoản đã được sử dụng!");
+
+    // Hash password
+    const hashPassword = await this.Model.hash(data.password);
+
+    // Gán roleId mặc định là 4 (Khách hàng)
+    const userData = {
+      ...data,
+      password: hashPassword,
+      roleId: 4
+    };
+
+    // Tạo user mới
+    const user = await this.Model.query().insertAndFetch(userData);
+    if (!user) throw new ApiException(6008, "Đăng ký thất bại!");
+
+    // Ẩn password khi trả về
+    delete user.password;
+    return user;
+  }
 }

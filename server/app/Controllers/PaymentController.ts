@@ -1,5 +1,7 @@
 import * as crypto from 'crypto';
 import axios from 'axios';
+import PaymentModel from '@app/Models/PaymentModel';
+import ApiException from '@app/Exceptions/ApiException';
 
 const partnerCode = 'MOMO';
 const accessKey = 'F8BBA842ECF85';
@@ -7,9 +9,9 @@ const secretKey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
 const endpoint = 'https://test-payment.momo.vn/v2/gateway/api/create';
 
 export default class PaymentController {
-    async createMomoPayment({ request, response }) {
+    async createMomoPayment({ request }) {
         try {
-            const { amount, orderInfo, returnUrl, notifyUrl, orderId } = request.body;
+            const { amount, orderInfo, returnUrl, orderId } = request.body;
 
             const requestId = orderId + Date.now();
             const requestType = 'payWithMethod';
@@ -17,8 +19,10 @@ export default class PaymentController {
             const lang = 'vi';
             const autoCapture = true;
             const orderGroupId = '';
+            const ipnUrl = "https://17f9dcb11c71.ngrok-free.app/api/payment/momo-callback"
 
-            const rawSignature = `accessKey=${accessKey}&amount=${amount}&extraData=${extraData}&ipnUrl=${notifyUrl}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}&redirectUrl=${returnUrl}&requestId=${requestId}&requestType=${requestType}`;
+            const rawSignature = 
+            `accessKey=${accessKey}&amount=${amount}&extraData=${extraData}&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}&redirectUrl=${returnUrl}&requestId=${requestId}&requestType=${requestType}`;
             const signature = crypto.createHmac('sha256', secretKey)
                 .update(rawSignature)
                 .digest('hex');
@@ -32,7 +36,7 @@ export default class PaymentController {
                 orderId,
                 orderInfo,
                 redirectUrl: returnUrl,
-                ipnUrl: notifyUrl,
+                ipnUrl,
                 lang,
                 requestType,
                 autoCapture,
@@ -48,29 +52,42 @@ export default class PaymentController {
             const responseData = momoResponse.data;
 
             if (responseData.resultCode === 0) {
-                return response.json({
+                // Trả về dữ liệu đơn giản cho frontend
+                return {
                     success: true,
                     payUrl: responseData.payUrl,
                     orderId,
                     requestId
-                });
+                };
             } else {
-                return response.status(400).json({
-                    success: false,
-                    message: 'Không thể tạo đơn hàng thanh toán',
-                    error: responseData.message
-                });
+                throw new ApiException(400, responseData.message || 'Không thể tạo đơn hàng thanh toán');
             }
         } catch (error) {
             console.error('Lỗi tạo thanh toán MoMo:', error);
-            return response.status(500).json({
-                success: false,
-                message: 'Lỗi server khi tạo thanh toán'
-            });
+            throw new ApiException(500, 'Lỗi server khi tạo thanh toán');
         }
     }
 
-    async momoCallback({ request, response }) {
+    // Thêm hàm mới để lưu từ frontend
+    async saveFromFrontend({ request }) {
+        const {
+            partnerCode, orderId, requestId, amount, orderInfo, orderType,
+            transId, resultCode, message, payType, responseTime, extraData, signature
+        } = request.body;
+
+        const payment = await PaymentModel.query().insert({
+            method: 1, // 1 = MoMo
+            paymentTime: new Date(),
+            cost: amount,
+            transactionID: transId,
+            status: resultCode == 0 ? 1 : 0,
+            // Có thể thêm các trường khác nếu cần
+        });
+
+        return { success: true, id: payment.id };
+    }
+
+    async momoReturn({ request }) {
         try {
             const {
                 partnerCode,
@@ -85,65 +102,36 @@ export default class PaymentController {
                 payType,
                 signature,
                 extraData
-            } = request.body;
+            } = request.query || request.body || {};
 
-            const rawSignature = `accessKey=${accessKey}&amount=${amount}&extraData=${extraData}&ipnUrl=${request.url}&orderId=${orderId}&orderInfo=${orderInfo}&orderType=${orderType}&partnerCode=${partnerCode}&payType=${payType}&requestId=${requestId}&resultCode=${resultCode}&transId=${transId}`;
-            const expectedSignature = crypto.createHmac('sha256', secretKey)
-                .update(rawSignature)
-                .digest('hex');
+            // Log toàn bộ dữ liệu MoMo trả về khi return
+            console.log('--- MoMo RETURN DATA ---');
+            console.log('partnerCode:', partnerCode);
+            console.log('orderId:', orderId);
+            console.log('requestId:', requestId);
+            console.log('amount:', amount);
+            console.log('orderInfo:', orderInfo);
+            console.log('orderType:', orderType);
+            console.log('transId:', transId);
+            console.log('resultCode:', resultCode);
+            console.log('message:', message);
+            console.log('payType:', payType);
+            console.log('signature:', signature);
+            console.log('extraData:', extraData);
+            console.log('request.query:', request.query);
 
-            if (signature !== expectedSignature) {
-                console.error('Invalid signature from MoMo');
-                return response.status(400).json({ error: 'Invalid signature' });
-            }
-
-            if (resultCode === 0) {
-                console.log(`Thanh toán thành công cho đơn hàng: ${orderId}, transId: ${transId}`);
-                return response.json({ success: true });
+            // Không trả về object phức tạp, chỉ trả về object đơn giản để middleware xử lý
+            if (resultCode == 0 || resultCode === '0') {
+                // Thành công
+                return { redirect: `/payment/success?orderId=${orderId}` };
             } else {
-                console.log(`Thanh toán thất bại cho đơn hàng: ${orderId}, message: ${message}`);
-                return response.json({ success: false, message });
-            }
-        } catch (error) {
-            console.error('Lỗi xử lý callback MoMo:', error);
-            return response.status(500).json({ error: 'Internal server error' });
-        }
-    }
-
-    async momoReturn({ request, response }) {
-        try {
-            const {
-                partnerCode,
-                orderId,
-                requestId,
-                amount,
-                orderInfo,
-                orderType,
-                transId,
-                resultCode,
-                message,
-                payType,
-                signature,
-                extraData
-            } = request.body;
-
-            const rawSignature = `accessKey=${accessKey}&amount=${amount}&extraData=${extraData}&ipnUrl=${request.url}&orderId=${orderId}&orderInfo=${orderInfo}&orderType=${orderType}&partnerCode=${partnerCode}&payType=${payType}&requestId=${requestId}&resultCode=${resultCode}&transId=${transId}`;
-            const expectedSignature = crypto.createHmac('sha256', secretKey)
-                .update(rawSignature)
-                .digest('hex');
-
-            if (signature !== expectedSignature) {
-                return response.redirect('/payment/failed?error=invalid_signature');
-            }
-
-            if (resultCode === 0) {
-                return response.redirect(`/payment/success?orderId=${orderId}&transId=${transId}`);
-            } else {
-                return response.redirect(`/payment/failed?orderId=${orderId}&message=${encodeURIComponent(message)}`);
+                // Thất bại
+                return { redirect: `/payment/failed?orderId=${orderId}&message=${encodeURIComponent(message || 'Thanh toán thất bại')}` };
             }
         } catch (error) {
             console.error('Lỗi xử lý return MoMo:', error);
-            return response.redirect('/payment/failed?error=server_error');
+            throw new ApiException(500, 'Internal server error');
         }
     }
+
 } 

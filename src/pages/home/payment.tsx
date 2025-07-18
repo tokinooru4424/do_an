@@ -8,6 +8,7 @@ import RegisterModal from '@src/components/Auth/RegisterModal';
 import LoginModal from '@src/components/Auth/LoginModal';
 import ForgotPasswordModal from '@src/components/Auth/ForgotPasswordModal';
 import PaymentService from '@src/services/paymentService';
+import MainHeader from '@src/components/Layout/MainHeader';
 
 const { Header, Footer } = Layout;
 
@@ -35,6 +36,27 @@ const PaymentPage = () => {
             setLoading(false);
         }
     }, []);
+
+    // Lấy các id từ query, ép kiểu về số
+    const { movieId, showtimeId, hallId } = router.query;
+    const movieIdNum = Number(movieId);
+    const showtimeIdNum = Number(showtimeId);
+    const hallIdNum = Number(hallId);
+
+    // Nếu các id không hợp lệ, báo lỗi
+    useEffect(() => {
+        if (!loading) {
+            if (
+                isNaN(movieIdNum) || movieIdNum <= 0 ||
+                isNaN(showtimeIdNum) || showtimeIdNum <= 0 ||
+                isNaN(hallIdNum) || hallIdNum <= 0
+            ) {
+                message.error('Không xác định được phim, suất chiếu hoặc phòng chiếu!');
+                // Có thể chuyển hướng về trang chọn phim
+                // router.push('/');
+            }
+        }
+    }, [loading, movieIdNum, showtimeIdNum, hallIdNum]);
 
     const handleLogout = () => {
         auth().logout();
@@ -86,7 +108,7 @@ const PaymentPage = () => {
     if (loading) return <div style={{ color: '#fff', padding: 40 }}><Spin /> Đang tải...</div>;
     if (!data) return <div style={{ color: 'red', padding: 40 }}>Không tìm thấy dữ liệu thanh toán. Vui lòng quay lại chọn ghế.</div>;
 
-    const { selectedSeats = [], seatTypes = {}, movie = {}, showtime = {}, cinema = {}, hall = {}, totalPrice = 0 } = data;
+    const { selectedSeats = [], seatTypes = {}, movie = {}, showtime = {}, cinema = {}, hall = {} } = data;
 
     // Tính chi tiết từng ghế
     const seatDetails = selectedSeats.map(seat => {
@@ -95,11 +117,21 @@ const PaymentPage = () => {
         return { seat, type, price };
     });
     const totalFee = 0;
-    const totalAll = totalPrice + totalFee;
+    const totalAll = seatDetails.reduce((sum, s) => sum + s.price, 0);
 
     const handleMomoPayment = async () => {
         if (!isLoggedIn) {
             message.error('Vui lòng đăng nhập để thanh toán');
+            return;
+        }
+
+        // Kiểm tra lại các id trước khi thanh toán
+        if (
+            isNaN(movieIdNum) || movieIdNum <= 0 ||
+            isNaN(showtimeIdNum) || showtimeIdNum <= 0 ||
+            isNaN(hallIdNum) || hallIdNum <= 0
+        ) {
+            message.error('Không xác định được phim, suất chiếu hoặc phòng chiếu!');
             return;
         }
 
@@ -113,28 +145,46 @@ const PaymentPage = () => {
             const returnUrl = `${backendBaseUrl}/payment/success`;
             const notifyUrl = `${backendBaseUrl}/api/v1/payment/momo/callback`;
 
+            // Tính lại tổng tiền dựa trên seatTypes và selectedSeats
+            const seatDetails = selectedSeats.map(seat => {
+                const type = seatTypes[seat] || 'normal';
+                const price = type === 'vip' ? 80000 : 70000;
+                return { seat, type, price };
+            });
+            const totalAll = seatDetails.reduce((sum, s) => sum + s.price, 0);
+
+            // Log để kiểm tra giá trị amount gửi đi
+            console.log('amount gửi đi:', totalAll);
+
             const paymentData = {
-                amount: totalAll,
+                amount: totalAll, // <-- luôn lấy từ biến vừa tính lại
                 orderInfo: orderInfo,
                 returnUrl: returnUrl,
                 notifyUrl: notifyUrl,
-                orderId: orderId
+                orderId: orderId,
+                movieId: movieIdNum,
+                showtimeId: showtimeIdNum,
+                hallId: hallIdNum
             };
 
-            const response = await new PaymentService().createMomoPayment(paymentData);
-
-            if (response.success && response.payUrl) {
-                // Lưu thông tin đơn hàng vào localStorage để theo dõi
+            const response = await PaymentService().createMomoPayment(paymentData);
+            // Sửa đoạn này để lấy đúng trường success và payUrl
+            const resData = response.data || response;
+            if (resData.success && resData.payUrl) {
+                // Lưu thông tin đơn hàng vào localStorage để theo dõi (nếu cần)
                 localStorage.setItem('currentOrder', JSON.stringify({
                     orderId: orderId,
-                    paymentData: data,
-                    payUrl: response.payUrl
+                    paymentData: {
+                        ...data,
+                        amount: totalAll // cập nhật lại amount cho đúng
+                    },
+                    payUrl: resData.payUrl
                 }));
 
                 // Chuyển hướng đến trang thanh toán MoMo
-                window.location.href = response.payUrl;
+                window.location.href = resData.payUrl;
             } else {
-                message.error(response.message || 'Không thể tạo đơn hàng thanh toán');
+                message.error(resData.message || 'Không thể tạo đơn hàng thanh toán');
             }
         } catch (error) {
             console.error('Lỗi thanh toán MoMo:', error);
@@ -146,40 +196,7 @@ const PaymentPage = () => {
 
     return (
         <div style={{ background: '#181b20', minHeight: '100vh' }}>
-            <Header className={styles.header}>
-                <div className={styles.headerContent}>
-                    <div className={styles.logo}>
-                        <img src="/logo/logo.png" alt="Logo" style={{ cursor: 'pointer' }} onClick={() => router.push('/')} />
-                    </div>
-                    <nav className={styles.nav}>
-                        <a href="/" className={router.pathname === '/' ? styles.active : ''}>Trang chủ</a>
-                        <a href="/lich-chieu" className={router.pathname === '/lich-chieu' ? styles.active : ''}>Lịch chiếu</a>
-                        <a href="/tin-tuc" className={router.pathname === '/tin-tuc' ? styles.active : ''}>Tin tức</a>
-                        <a href="/khuyen-mai" className={router.pathname === '/khuyen-mai' ? styles.active : ''}>Khuyến mãi</a>
-                        <a href="/gia-ve" className={router.pathname === '/gia-ve' ? styles.active : ''}>Giá vé</a>
-                        <a href="/gioi-thieu" className={router.pathname === '/gioi-thieu' ? styles.active : ''}>Giới thiệu</a>
-                        {isLoggedIn && (
-                            <a onClick={() => router.push('/admin/dashboard')} className={router.pathname === '/admin/dashboard' ? styles.active : ''}>Quản lý</a>
-                        )}
-                    </nav>
-                    <div className={styles.authButtons}>
-                        {!isLoggedIn ? (
-                            <>
-                                <Button className={styles.signupButton} onClick={showRegisterModal}>Đăng ký</Button>
-                                <Button type="primary" className={styles.loginButton} onClick={showLoginModal}>Đăng nhập</Button>
-                            </>
-                        ) : (
-                            <Dropdown overlay={menu} trigger={['click']}>
-                                <span style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', color: '#fff' }}>
-                                    <Avatar icon={<UserOutlined />} style={{ marginRight: 8 }} />
-                                    {user?.firstName || user?.username || 'User'}
-                                    <DownOutlined style={{ marginLeft: 8 }} />
-                                </span>
-                            </Dropdown>
-                        )}
-                    </div>
-                </div>
-            </Header>
+            <MainHeader />
             <div style={{ minHeight: 'calc(100vh - 64px)', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', padding: '40px 0' }}>
                 <div style={{ display: 'flex', gap: 32, width: 1200, maxWidth: '100%' }}>
                     {/* Cột trái */}
@@ -278,7 +295,7 @@ const PaymentPage = () => {
                             <div style={{ margin: '32px 0 16px 0' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 17, marginBottom: 8, color: '#fff' }}>
                                     <span>Thanh toán</span>
-                                    <span style={{ fontWeight: 700 }}>{totalPrice.toLocaleString('vi-VN')}đ</span>
+                                    <span style={{ fontWeight: 700 }}>{totalAll.toLocaleString('vi-VN')}đ</span>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 17, marginBottom: 8, color: '#fff' }}>
                                     <span>Phí</span>

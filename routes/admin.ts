@@ -6,6 +6,8 @@ Route.get("/home/:id", "pages/home/[movieId]").name("frontend.home.detail")
 Route.get("/admin/login", "pages/admin/login").name("frontend.admin.login")
 Route.get("/forgot-password", "pages/admin/forgotPassword").name("frontend.admin.forgotPassword")
 Route.get("/reset-password/:token", "pages/admin/resetPassword").name("frontend.admin.resetPassword")
+Route.get("/payment/success", "pages/home/payment/success");
+Route.get("/payment/failed", "pages/home/payment/failed");
 
 Route.group(() => {
   Route.get("/", "pages/admin/users").name("users.index").sidebar('users.index')

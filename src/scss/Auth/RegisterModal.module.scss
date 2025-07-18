@@ -263,6 +263,20 @@
     }
 }
 
+.labelCustom :global(.ant-form-item-label > label),
+.labelCustom :global(label) {
+  color: #fff !important;
+  font-weight: 500 !important;
+}
+.labelCustom :global(.ant-picker-suffix),
+.labelCustom :global(.anticon-calendar) {
+  color: #fff !important;
+}
+.labelCustom :global(::placeholder)
+{
+    color: #fff;
+}
+
 /* Style cho liên kết Quên mật khẩu? - Không dùng trong Register */
 /* Style cho liên kết Đăng ký - Giữ lại từ RegisterModal */
 .footer {

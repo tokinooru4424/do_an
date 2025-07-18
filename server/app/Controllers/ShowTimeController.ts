@@ -44,6 +44,12 @@ export default class ShowTimeController extends BaseController {
             subtitle: "string"
         }
         let params = this.validate(inputs, allowFields, { removeNotAllow: true })
+        // Kiểm tra nếu startTime trước thời điểm hiện tại
+        const now = new Date();
+        const startTime = new Date(params.startTime);
+        if (startTime < now) {
+            throw new ApiException(6303, 'Không thể tạo suất chiếu với thời gian trong quá khứ!');
+        }
         const overlap = await this.Model.query()
             .where('hallId', params.hallId)
             .where(raw('NOT ("endTime" <= ? OR "startTime" >= ?)', [params.startTime, params.endTime]))
@@ -68,6 +74,13 @@ export default class ShowTimeController extends BaseController {
         let params = this.validate(inputs, allowFields, { removeNotAllow: true })
         const { id } = params
         delete params.id
+
+        // Kiểm tra nếu startTime trước thời điểm hiện tại
+        const now = new Date();
+        const startTime = new Date(params.startTime);
+        if (startTime < now) {
+            throw new ApiException(6303, 'Không thể cập nhật suất chiếu với thời gian trong quá khứ!');
+        }
 
         let exist = await this.Model.getById(id)
         if (!exist) throw new ApiException(6301, "ShowTime doesn't exist!")

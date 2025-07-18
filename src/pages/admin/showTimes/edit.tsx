@@ -58,7 +58,7 @@ const Edit = () => {
   //submit form
   const onFinish = async (values: any): Promise<void> => {
     // Kiểm tra định dạng phim và phòng chiếu sử dụng dữ liệu từ showTime
-    if (showTime.movieFormat !== showTime.hallFormat) {
+    if (movie && hall && movie.format !== hall.hallFormat) {
       form.setFields([
         {
           name: 'format',
@@ -77,11 +77,23 @@ const Edit = () => {
         form.setFields([
           {
             name: 'endTime',
-            errors: [t('pages:showTimes.form.endTimeInvalid') || 'Thời gian kết thúc phải lớn hơn thời gian bắt đầu cộng thời lượng phim!'],
+            errors: [t('errors:6304')],
           },
         ]);
         return;
       }
+    }
+    // Kiểm tra nếu startTime trước thời điểm hiện tại
+    const now = window.moment ? window.moment() : require('moment')();
+    const startTime = values.startTime && values.startTime.clone ? values.startTime.clone() : values.startTime;
+    if (startTime && startTime.isBefore(now)) {
+      form.setFields([
+        {
+          name: 'startTime',
+          errors: [t('errors:6303')],
+        },
+      ]);
+      return;
     }
     setLoading(true)
     if (values.startTime) values.startTime = values.startTime.format('YYYY-MM-DD HH:mm');

@@ -32,7 +32,7 @@ const Create = () => {
     // Kiểm tra định dạng phim và phòng chiếu
     const movie = movies.find((m: any) => m.value === values.movieId);
     const hall = halls.find((h: any) => h.value === values.hallId);
-    if (movie && hall && movie.format !== hall.format) {
+    if (movie && hall && movie.format !== hall.hallFormat) {
       form.setFields([
         {
           name: 'format',
@@ -51,17 +51,29 @@ const Create = () => {
         form.setFields([
           {
             name: 'endTime',
-            errors: [t('pages:showTimes.form.endTimeInvalid') || 'Thời gian kết thúc phải lớn hơn thời gian bắt đầu cộng thời lượng phim!'],
+            errors: [t('errors:6304')],
           },
         ]);
         return;
       }
     }
+    // Kiểm tra nếu startTime trước thời điểm hiện tại
+    const now = window.moment ? window.moment() : require('moment')();
+    const startTime = values.startTime && values.startTime.clone ? values.startTime.clone() : values.startTime;
+    if (startTime && startTime.isBefore(now)) {
+      form.setFields([
+        {
+          name: 'startTime',
+          errors: [t('errors:6303')],
+        },
+      ]);
+      return;
+    }
     setLoading(true)
     // Xử lý dữ liệu ngày giờ nếu cần
     if (values.startTime) values.startTime = values.startTime.format('YYYY-MM-DD HH:mm');
     if (values.endTime) values.endTime = values.endTime.format('YYYY-MM-DD HH:mm');
-    let [error, result]: any[] = await to(showTimeService().create(values));
+    let [error, result]: any[] = await to(showTimeService().withAuth().create(values));
     setLoading(false)
     if (error) {
       if (error.code === 6302) {
