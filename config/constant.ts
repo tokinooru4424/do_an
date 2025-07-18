@@ -58,7 +58,12 @@ const paymentType = {
   "2": "VNPay"
 }
 
+const gender = {
+  "0": "Nam",
+  "1": "Nữ"
+}
+
 export default {
-  roleKey, numberInMonth, numberInMonthProfit, hallFormat, movieStatus, paymentStatus, paymentType
+  roleKey, numberInMonth, numberInMonthProfit, hallFormat, movieStatus, paymentStatus, paymentType, gender
 }
 

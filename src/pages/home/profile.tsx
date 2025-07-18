@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tabs, Card, Descriptions, Table, Layout, Button, Avatar, Dropdown, Menu } from 'antd';
 import { UserOutlined, HistoryOutlined, DownOutlined, CheckCircleTwoTone } from '@ant-design/icons';
 import { useRouter } from 'next/router';
@@ -8,6 +8,9 @@ import RegisterModal from '@src/components/Auth/RegisterModal';
 import LoginModal from '@src/components/Auth/LoginModal';
 import ForgotPasswordModal from '@src/components/Auth/ForgotPasswordModal';
 import auth from '@src/helpers/auth';
+import TicketService from '@src/services/ticketService';
+import TicketHistory from '@src/components/TicketHistory';
+import UserInfo from '@src/components/UserInfo';
 
 const { Header, Footer } = Layout;
 
@@ -20,26 +23,6 @@ const mockUser = {
     dob: '1998-01-01',
 };
 
-const mockHistory = [
-    {
-        key: '1',
-        movie: 'Godzilla x Kong',
-        date: '2024-07-04',
-        time: '07:30',
-        seats: 'F6, F7',
-        price: 140000,
-        status: 'Thành công',
-    },
-    {
-        key: '2',
-        movie: 'Dune 2',
-        date: '2024-06-20',
-        time: '19:00',
-        seats: 'C3, C4',
-        price: 140000,
-        status: 'Thành công',
-    },
-];
 
 const columns = [
     { title: <span style={{ fontWeight: 700 }}>Phim</span>, dataIndex: 'movie', key: 'movie' },
@@ -153,32 +136,14 @@ const ProfilePage = () => {
                             key: 'info',
                             label: <span style={{ color: '#fff' }}><UserOutlined /> Thông tin cá nhân</span>,
                             children: (
-                                <Card bordered={false} style={{ background: 'none', color: '#fff' }}>
-                                    <Descriptions column={1} labelStyle={{ color: '#fff', fontWeight: 600 }} contentStyle={{ color: '#fff', fontWeight: 700 }}>
-                                        <Descriptions.Item label="Tên đăng nhập">{mockUser.username}</Descriptions.Item>
-                                        <Descriptions.Item label="Họ tên">{mockUser.fullName}</Descriptions.Item>
-                                        <Descriptions.Item label="Email">{mockUser.email}</Descriptions.Item>
-                                        <Descriptions.Item label="Số điện thoại">{mockUser.phone}</Descriptions.Item>
-                                        <Descriptions.Item label="Giới tính">{mockUser.gender}</Descriptions.Item>
-                                        <Descriptions.Item label="Ngày sinh">{mockUser.dob}</Descriptions.Item>
-                                    </Descriptions>
-                                </Card>
+                                <UserInfo />
                             ),
                         },
                         {
                             key: 'history',
                             label: <span style={{ color: '#fff' }}><HistoryOutlined /> Lịch sử đặt vé</span>,
                             children: (
-                                <Card bordered={false} style={{ background: 'rgba(30,32,36,0.98)', color: '#fff', borderRadius: 16, boxShadow: '0 4px 24px 0 rgba(0,0,0,0.12)', padding: 0 }}>
-                                    <Table
-                                        columns={columns}
-                                        dataSource={mockHistory}
-                                        pagination={false}
-                                        style={{ background: 'none', color: '#fff', borderRadius: 16 }}
-                                        rowClassName={(_, idx) => idx % 2 === 0 ? 'custom-row' : 'custom-row-alt'}
-                                        bordered
-                                    />
-                                </Card>
+                                <TicketHistory />
                             ),
                         },
                     ]}

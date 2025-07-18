@@ -18,7 +18,7 @@ class ShowTimeModel extends BaseModel {
 
     static get relationMappings() {
         return {
-            movie: {
+            movies: {
                 relation: BaseModel.BelongsToOneRelation,
                 modelClass: MovieModel,
                 join: {
@@ -26,7 +26,7 @@ class ShowTimeModel extends BaseModel {
                     to: 'movies.id'
                 }
             },
-            hall: {
+            halls: {
                 relation: BaseModel.BelongsToOneRelation,
                 modelClass: HallModel,
                 join: {

@@ -66,6 +66,15 @@ class TicketService extends Base {
       data: data,
     });
   };
+
+  getTicketHistory = async (data: any) => {
+    console.log("data", data);
+    return this.request({
+      url: `/api/v1/tickets/history`,
+      method: 'GET',
+      data: data,
+    });
+  };
 }
 
 export default () => new TicketService(); 

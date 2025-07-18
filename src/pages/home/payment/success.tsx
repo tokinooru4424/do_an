@@ -8,6 +8,7 @@ import TicketService from '@src/services/ticketService';
 import useBaseHook from '@src/hooks/BaseHook';
 import { UserOutlined, DownOutlined } from '@ant-design/icons';
 import MainHeader from '@src/components/Layout/MainHeader';
+import auth from '@src/helpers/auth';
 
 const { Title, Text } = Typography;
 const { Header, Footer } = Layout;
@@ -44,10 +45,11 @@ const PaymentSuccessPage = () => {
                 // Lấy paymentId trả về từ backend
                 const paymentId = paymentRes.id;
                 // Sau khi lưu payment thành công, tạo ticket với đúng thông tin
+                console.log(paymentData);
                 const ticketData = {
                     showTimeId: paymentData?.showtime?.id,
                     movieId: paymentData?.showtime?.movieId,
-                    userId: paymentData?.userId || 1, // Nếu có userId trong paymentData, nếu không thì để 1 hoặc lấy từ auth
+                    userId: auth().user?.id,
                     bookingTime: new Date().toISOString(),
                     seatNumber: paymentData?.selectedSeats?.join(','),
                     format: paymentData?.hall?.hallFormat,
@@ -144,12 +146,13 @@ const PaymentSuccessPage = () => {
                             <Title level={4} style={{ color: '#fff', marginBottom: 16 }}>
                                 Thông tin vé xem phim
                             </Title>
+                            <div><strong>Mã vé:</strong> {ticketInfo.ticket.id}</div>
                             <div><strong>Phim:</strong> {ticketInfo.movie.title}</div>
                             <div><strong>Suất chiếu:</strong> {new Date(ticketInfo.showTime.startTime).toLocaleString('vi-VN')}</div>
                             <div><strong>Rạp:</strong> {ticketInfo.cinema.name}</div>
                             <div><strong>Phòng chiếu:</strong> {ticketInfo.hall.name}</div>
                             <div><strong>Ghế:</strong> {ticketInfo.ticket.seatNumber}</div>
-                            <div><strong>Giá vé:</strong> {ticketInfo.payment.cost} VNĐ</div>
+                            <div><strong>Giá vé:</strong> {Number(ticketInfo.payment.cost).toLocaleString('vi-VN', { maximumFractionDigits: 0 })} VNĐ</div>
                             <div><strong>Thời gian thanh toán:</strong> {new Date(ticketInfo.payment.paymentTime).toLocaleString('vi-VN')}</div>
                         </div>
                     )}

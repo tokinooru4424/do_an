@@ -58,6 +58,30 @@ class usersService extends Base {
       data: data,
     });
   };
+
+  getInfo = async (data: any  ) => {
+    return this.request({
+      url: `/api/v1/${name}/getInfoUser`,
+      method: 'GET', 
+      data: data,
+    });
+  };
+
+  updateInfo = async (data: any) => {
+    return this.request({
+      url: `/api/v1/users/updateInfo`,
+      method: 'PUT',
+      data: data,
+    });
+  };
+
+  changePassword = async ({ password }: { password: string }) => {
+    return this.request({
+      url: `/api/v1/changePassword`,
+      method: 'POST',
+      data: { password },
+    });
+  };
 }
 
 export default () => new usersService();

@@ -24,8 +24,7 @@ const AdminHeader = (props: any) => {
         key: "username",
         label: <>
           <span className="crop-name">
-            {" "}
-            {t("common:hi", { username: firstName })}{" "}
+            {t("common:hi", { username: firstName })}
           </span>
           <Avatar
             style={{ marginLeft: 8 }}

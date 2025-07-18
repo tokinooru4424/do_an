@@ -7,6 +7,7 @@ import SeatMapModal from './SeatMapModal';
 import hallService from '@src/services/hallService';
 import PaymentPage from '../pages/home/payment';
 import { useRouter } from 'next/router';
+import constant from '@config/constant';
 
 const mockDates = Array.from({ length: 4 }, (_, i) => {
     const d = new Date();
@@ -29,16 +30,18 @@ const BookingModal = ({ visible, onClose, movieId, movie }) => {
     const showtimes = showtimeData?.data || [];
     // Lọc suất chiếu theo ngày được chọn
     const filteredShowtimes = useMemo(() => {
-        // So sánh ngày local
-        showtimes.forEach(st => {
-            const dateStr = new Date(st.startTime).toLocaleDateString('en-CA');
-        });
         return showtimes.filter(st => {
             if (!st.startTime) return false;
+            if (Number(st.movieId) !== Number(movieId)) return false;
             const dateStr = new Date(st.startTime).toLocaleDateString('en-CA');
-            return dateStr === selectedDate;
+            if (dateStr !== selectedDate) return false;
+            // Nếu là ngày hôm nay, chỉ lấy các suất chiếu chưa qua giờ hiện tại
+            if (dateStr === new Date().toLocaleDateString('en-CA')) {
+                return new Date(st.startTime).getTime() > Date.now();
+            }
+            return true;
         });
-    }, [showtimes, selectedDate]);
+    }, [showtimes, selectedDate, movieId]);
     // Gom suất chiếu theo rạp
     const showtimesByCinema = useMemo(() => {
         const map = {};
@@ -53,12 +56,10 @@ const BookingModal = ({ visible, onClose, movieId, movie }) => {
     const [seatModalOpen, setSeatModalOpen] = useState(false);
     const [selectedHall, setSelectedHall] = useState(null);
     const [selectedSeats, setSelectedSeats] = useState([]);
-    const [loadingHall, setLoadingHall] = useState(false);
     // Fetch halls để lấy thông tin sơ đồ ghế
     const { data: hallData } = useSWR('hallData', () => hallService().select2({ pageSize: -1 }));
     const halls = hallData?.data || [];
     const [selectedShowtime, setSelectedShowtime] = useState(null);
-    const [showPayment, setShowPayment] = useState(false);
     const router = useRouter();
 
     // Khi click vào suất chiếu
@@ -69,26 +70,6 @@ const BookingModal = ({ visible, onClose, movieId, movie }) => {
         setSelectedShowtime(showtime);
         setSeatModalOpen(true);
     };
-
-    // Tính tổng tiền ghế đã chọn (giống logic ở SeatMapModal)
-    const getSeatPrice = (seatLabel) => {
-        const type = (selectedHall && selectedHall.autoSeatTypes && selectedHall.autoSeatTypes[seatLabel]) || 'normal';
-        if (type === 'vip') return 80000;
-        return 70000;
-    };
-    const totalPrice = selectedSeats.reduce((sum, seat) => sum + getSeatPrice(seat), 0);
-
-    console.log('BookingModal render', {
-        selectedHall,
-        selectedShowtime,
-        seatConfig: selectedHall && {
-            totalSeat: selectedHall.totalSeat,
-            seatInRow: selectedHall.seatInRow,
-            seatInColumn: selectedHall.seatInColumn,
-            showTimeId: selectedShowtime?.id,
-        },
-        seatModalOpen
-    });
 
     return (
         <Modal
@@ -121,10 +102,16 @@ const BookingModal = ({ visible, onClose, movieId, movie }) => {
                         cinemas.map((cinema, idx) => {
                             const cinemaId = cinema.value || cinema.id;
                             const showtimesForCinema = showtimesByCinema[cinemaId] || [];
+                            // Lấy tất cả định dạng của các suất chiếu thuộc rạp này
+                            const formats = Array.from(new Set(showtimesForCinema.map(st => st.format))).filter(Boolean);
                             return (
                                 <div key={cinemaId} style={{ marginBottom: 32 }}>
-                                    <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 4 }}>{cinema.label || cinema.name}</div>
-                                    <div style={{ fontWeight: 500, fontSize: 16, marginBottom: 8 }}>{cinema.format || 'Rạp 2D'}</div>
+                                    <div style={{ fontWeight: 700, fontSize: 20, marginBottom: 4 }}>{cinema.label}</div>
+                                    <div style={{ fontWeight: 500, fontSize: 16, marginBottom: 8 }}>
+                                        {formats.length > 0
+                                            ? `${formats.map(f => constant.hallFormat[String(f)] || f).join(', ')}`
+                                            : 'Rạp'}
+                                    </div>
                                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                                         {showtimesForCinema.length === 0 ? <span style={{ color: '#888' }}>Không có suất chiếu</span> : (
                                             showtimesForCinema.map(st => (

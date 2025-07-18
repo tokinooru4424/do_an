@@ -33,8 +33,8 @@ Route.group(() => {
   Route.get("/halls/select2", "HallController.select2").name('halls.select2')
 
     // ---------------------------------- Ticket Routes ---------------------------------------//
-    Route.get("/tickets/get-booked-seats", "TicketController.getBookedSeats").name('ticket.getBookedSeats');
-  Route.resource("/tickets", "TicketController").name('tickets')
+  Route.get("/tickets/get-booked-seats", "TicketController.getBookedSeats").name('ticket.getBookedSeats');
+  Route.post("/tickets", "TicketController.store").name('tickets')
   Route.get("/tickets/ticket-info", "TicketController.ticketInfo").name('ticket.ticketInfo');
     // ---------------------------------- End Ticket Routes -----------------------------------//
 
@@ -43,6 +43,12 @@ Route.group(() => {
     Route.post("/logout", "AuthController.logout").name('auth.logout')
     Route.post("/refreshToken", "AuthController.refreshToken").name('auth.refreshToken')
     // ---------------------------------- User Routes ---------------------------------------//
+    
+    Route.get("/users/getInfoUser", "UserController.getInfoUser").name('users.getInfoUser')
+    Route.put("/users/updateInfo", "UserController.updateInfo").name('users.updateInfo')
+    Route.get("/users/getInfo", "UserController.getInfo").name('users.getInfo').middleware([
+      permission({ 'users': 'R' })
+    ])
     Route.resource("/users", "UserController").name('users').middleware([
       permissionResource(['users'])
     ])
@@ -106,7 +112,9 @@ Route.group(() => {
     Route.post("/upload", "UploadController.upload").name('upload.upload').middleware([upload.single('files')]);
     Route.post("/upload/poster", "UploadController.uploadPoster").name('upload.poster').middleware([upload.single('files')]);
     Route.post("/upload/banner", "UploadController.uploadBanner").name('upload.banner').middleware([upload.single('files')]);
-    // ---------------------------------- End Routes -----------------------------------//
+    // ---------------------------------- End Routes ---------- -------------------------//
+    Route.get('/tickets/history', 'TicketController.getTicketHistory');
+    Route.get('/dashboard/summary', 'DashboardController.summary');
   }).middleware([AuthApiMiddleware])
 
   // ---------------------------------- Public Routes ---------------------------------------//

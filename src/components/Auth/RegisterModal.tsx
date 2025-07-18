@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Form, Input, Button, Row, Col, DatePicker } from 'antd';
+import { Modal, Form, Input, Button, Row, Col, DatePicker, Radio } from 'antd';
 import styles from '../../scss/auth/RegisterModal.module.scss';
 import authService from '@src/services/authService';
 import { message } from 'antd';
@@ -21,7 +21,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ visible, onCancel, onLogi
                 email: values.email,
                 password: values.password,
                 phoneNumber: values.phoneNumber,
-                birthday: values.birthday ? values.birthday.format('YYYY-MM-DD') : undefined
+                birthday: values.birthday ? values.birthday.format('YYYY-MM-DD') : undefined,
+                gender: values.gender
             });
             message.success('Đăng ký thành công!');
             onCancel();
@@ -82,6 +83,16 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ visible, onCancel, onLogi
                     </Col>
                 </Row>
                 <Form.Item
+                    label="Giới tính"
+                    name="gender"
+                    rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}
+                >
+                    <Radio.Group>
+                        <Radio value={0}>Nam</Radio>
+                        <Radio value={1}>Nữ</Radio>
+                    </Radio.Group>
+                </Form.Item>
+                <Form.Item
                     label="Ngày sinh"
                     name="birthday"
                     rules={[{ required: true, message: 'Vui lòng chọn Ngày sinh!' }]}
@@ -137,6 +148,11 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ visible, onCancel, onLogi
                     Bạn đã có tài khoản? <a href="#" onClick={(e) => { e.preventDefault(); onLoginClick(); }}>Đăng nhập</a>
                 </div>
             </Form>
+            <style jsx global>{`
+              .ant-radio-wrapper {
+                color: #fff !important;
+              }
+            `}</style>
         </Modal>
     );
 };

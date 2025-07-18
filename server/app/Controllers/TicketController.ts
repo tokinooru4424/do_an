@@ -17,7 +17,7 @@ export default class TicketController extends BaseController {
             paymentId: "number!",
             showTimeId: "number!",
             movieId: "number!",
-            userId: "number!",
+            userId: "number",
             bookingTime: "string!",
             format: "number!",
             price: "number!",
@@ -125,5 +125,25 @@ export default class TicketController extends BaseController {
         });
 
         return { bookedSeats };
+    }
+
+    async getTicketHistory({ request }) {
+        const userId = request.auth?.id 
+        if (!userId) throw new ApiException(401, 'Bạn chưa đăng nhập!');
+
+        // Join với bảng showtimes và movies để lấy tên phim
+        const tickets = await TicketModel.query()
+            .where('tickets.userId', userId)
+            .leftJoin('showTimes', 'tickets.showTimeId', 'showTimes.id')
+            .leftJoin('movies', 'tickets.movieId', 'movies.id')
+            .select(
+                'tickets.*',
+                'movies.title as movieTitle',
+                'showTimes.startTime as showTimeStart',
+                'showTimes.endTime as showTimeEnd'
+            )
+            .orderBy('tickets.createdAt', 'desc');
+
+        return { tickets };
     }
 }

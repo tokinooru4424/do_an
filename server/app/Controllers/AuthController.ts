@@ -212,7 +212,8 @@ export default class AuthController extends BaseController {
       name: "string!",
       username: "string!",
       phoneNumber: "string!",
-      birthday: "string!"
+      birthday: "string!",
+      gender: "number!"
     };
     const data = this.validate(inputs, allowFields, { removeNotAllow: true });
 

@@ -10,12 +10,8 @@ class AuthApiMiddleware extends BaseMiddleware {
   cookies: any
   constructor(request, response, next) {
     super(request, response, next);
-    console.log('--- [AuthApiMiddleware] ---');
-    console.log('Path:', request.path);
-    console.log('Headers:', request.headers);
     let cookie: any = this.getBearerTokenFromHeader(request)
     if (cookie.error) {
-      console.log('AuthApiMiddleware: Missing or invalid token');
       cookie = nextCookie({
         req: this.request
       })
@@ -23,12 +19,10 @@ class AuthApiMiddleware extends BaseMiddleware {
     this.cookies = new Cookies(cookie);
     this.checkToken().then(res => {
       if (res.error) {
-        console.log('AuthApiMiddleware: checkToken error:', res.error);
         return response.status(401).json({ code: 401, error: res.error })
       }
       next();
     }).catch(err => {
-      console.log('AuthApiMiddleware: catch error:', err)
       return response.status(401).json({ code: 401, error: err })
     })
   }
@@ -62,9 +56,6 @@ class AuthApiMiddleware extends BaseMiddleware {
       oldToken = res
     })
     if (oldToken) return { error: "Token has expired" }
-    /* if(result.type !== "admin"){
-      return this.response.error(403, "not access")
-    } */
     if (result.exp - Date.now() / 1000 < authConfig['JWT_REFRESH_TIME']) {
       let newToken = Auth.generateJWT({
         id: result.id,

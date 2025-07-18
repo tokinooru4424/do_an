@@ -295,4 +295,39 @@ export default class AdminController extends BaseController {
     if (!result) throw new ApiException(6006, "User doesn't exist");
     return result;
   }
+
+  async getInfoUser() {
+    const { auth } = this.request;
+    let result = await this.Model.getById(auth.id);
+    delete result['password']
+
+    if (!result) throw new ApiException(6006, "User doesn't exist")
+
+    return result
+  }
+
+  async updateInfo() {
+    const { auth } = this.request;
+    let inputs = this.request.all();
+
+    // Chỉ cho phép cập nhật các trường này
+    const allowFields = {
+      name: "string!",
+      phoneNumber: "string!",
+      gender: "number!",
+      birthday: "string!"
+    };
+    let params = this.validate(inputs, allowFields, { removeNotAllow: true });
+
+    // Kiểm tra user tồn tại
+    let exist = await this.Model.getById(auth.id);
+    if (!exist) throw new ApiException(6006, "User doesn't exists!");
+
+    // Nếu cần kiểm tra trùng số điện thoại, email... thì bổ sung ở đây
+
+    let result = await this.Model.updateOne(auth.id, { ...params });
+    delete result['password'];
+
+    return result;
+  }
 }

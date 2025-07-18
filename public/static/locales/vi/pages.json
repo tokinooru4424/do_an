@@ -28,14 +28,14 @@
     "reNewPassword": "Re-new Password"
   },
   "changePassword": {
-    "title": "Change Password",
-    "password": "Password",
-    "rePassword": "Re-password"
+    "title": "Đổi mật khẩu",
+    "password": "Mật khẩu mới",
+    "rePassword": "Nhập lại mật khẩu mới"
   },
   "dashboard": {
     "index": {
       "title": "Bảng điều khiển",
-      "description": "Tại màn hình này, Bạn có thể chat với tư vấn viên hoặc bot"
+      "description": "Thống kê doanh thu"
     }
   },
   "sendNotifacation": {

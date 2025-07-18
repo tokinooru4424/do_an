@@ -26,7 +26,7 @@ const PaymentPage = () => {
         if (typeof window !== 'undefined') {
             const raw = localStorage.getItem('paymentData');
             console.log('paymentData from localStorage:', raw);
-            if (raw) {
+            if (raw) {  
                 try {
                     setData(JSON.parse(raw));
                 } catch (e) {
@@ -120,10 +120,6 @@ const PaymentPage = () => {
     const totalAll = seatDetails.reduce((sum, s) => sum + s.price, 0);
 
     const handleMomoPayment = async () => {
-        if (!isLoggedIn) {
-            message.error('Vui lòng đăng nhập để thanh toán');
-            return;
-        }
 
         // Kiểm tra lại các id trước khi thanh toán
         if (

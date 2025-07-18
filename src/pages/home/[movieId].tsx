@@ -36,6 +36,7 @@ const MovieDetail = () => {
     const [isForgotPasswordModalVisible, setIsForgotPasswordModalVisible] = useState(false);
     const [movie, setMovie] = useState(null);
     const [youtubeId, setYoutubeId] = useState(null);
+    const [showDescModal, setShowDescModal] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -163,9 +164,54 @@ const MovieDetail = () => {
                         {movie.director && <div style={{ marginBottom: 8 }}><b>Đạo diễn:</b> {movie.director}</div>}
                         {movie.cast && <div style={{ marginBottom: 8 }}><b>Diễn viên:</b> {movie.cast}</div>}
                         {/* Nội dung phim */}
-                        <div style={{ margin: '16px 0 24px 0', background: '#23272f', borderRadius: 8, padding: 16, color: '#fff', fontSize: 17, lineHeight: 1.7 }}>
-                            <div style={{ marginTop: 8 }}>{movie.description || 'Đang cập nhật...'}</div>
-                        </div>
+                        <div style={{
+  margin: '16px 0 24px 0',
+  background: '#23272f',
+  borderRadius: 8,
+  padding: 16,
+  color: '#fff',
+  fontSize: 17,
+  lineHeight: 1.7,
+  position: 'relative',
+  minHeight: 80
+}}>
+  <div
+    style={{
+      display: '-webkit-box',
+      WebkitLineClamp: 3,
+      WebkitBoxOrient: 'vertical',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      cursor: movie.description && movie.description.length > 0 ? 'pointer' : 'default'
+    }}
+    onClick={() => {
+      if (movie.description && movie.description.length > 0) setShowDescModal(true);
+    }}
+    title={movie.description}
+  >
+    {movie.description || 'Đang cập nhật...'}
+  </div>
+  {movie.description && movie.description.length > 120 && (
+    <div
+      onClick={() => setShowDescModal(true)}
+      style={{
+        position: 'absolute',
+        right: 16,
+        bottom: 12,
+        background: 'rgba(35,39,47,0.95)',
+        color: '#40a9ff',
+        fontWeight: 700,
+        cursor: 'pointer',
+        padding: '2px 10px',
+        borderRadius: 6,
+        fontSize: 15,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.12)'
+      }}
+    >
+      Xem thêm
+    </div>
+  )}
+</div>
                         {/* Nút xem trailer */}
                         {movie.trailer && (
                             youtubeId ? (
@@ -200,6 +246,18 @@ const MovieDetail = () => {
                                     style={{ width: '100%', height: 340, display: 'block', border: 0 }}
                                 />
                             )}
+                        </Modal>
+                        {/* Modal nội dung phim */}
+                        <Modal
+                            open={showDescModal}
+                            onCancel={() => setShowDescModal(false)}
+                            footer={null}
+                            title="Nội dung phim"
+                            width={600}
+                        >
+                            <div style={{ whiteSpace: 'pre-line', fontSize: 17, color: '#222' }}>
+                                {movie.description}
+                            </div>
                         </Modal>
                     </div>
                 </div>

@@ -5,6 +5,12 @@ import { useRouter } from 'next/router';
 import styles from '@src/scss/pages/Home.module.scss';
 import useBaseHook from '@src/hooks/BaseHook';
 import auth from '@src/helpers/auth';
+import LoginModal from '../Auth/LoginModal';
+import RegisterModal from '../Auth/RegisterModal';
+import ForgotPasswordModal from '../Auth/ForgotPasswordModal';
+import ChangePassword from '@src/components/GeneralComponents/ChangePassword';
+import AuthService from '@src/services/authService';
+import { message } from 'antd';
 
 const { Header } = Layout;
 
@@ -15,6 +21,11 @@ const MainHeader = () => {
     const [activeLink, setActiveLink] = useState(router.pathname);
     const [isLoggedIn, setIsLoggedIn] = useState(!!auth().token);
     const user = auth().user;
+    console.log(user);
+    const [showLogin, setShowLogin] = useState(false);
+    const [showRegister, setShowRegister] = useState(false);
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
+    const [showChangePassword, setShowChangePassword] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -34,9 +45,20 @@ const MainHeader = () => {
         router.push('/');
     };
 
+    const handleChangePassword = async (values) => {
+        try {
+            await AuthService().withAuth().changePassword({ password: values.password });
+            message.success('Đổi mật khẩu thành công!');
+            setShowChangePassword(false);
+        } catch (err) {
+            message.error(err?.message || 'Đổi mật khẩu thất bại!');
+        }
+    };
+
     const menu = (
         <Menu>
             <Menu.Item key="profile" onClick={() => router.push('/home/profile')}>Thông tin cá nhân</Menu.Item>
+            <Menu.Item key="changePassword" onClick={() => setShowChangePassword(true)}>Đổi mật khẩu</Menu.Item>
             <Menu.Item key="logout" onClick={handleLogout}>Đăng xuất</Menu.Item>
         </Menu>
     );
@@ -54,15 +76,18 @@ const MainHeader = () => {
                     <a href="/khuyen-mai" className={activeLink === '/khuyen-mai' ? styles.active : ''}>Khuyến mãi</a>
                     <a href="/gia-ve" className={activeLink === '/gia-ve' ? styles.active : ''}>Giá vé</a>
                     <a href="/gioi-thieu" className={activeLink === '/gioi-thieu' ? styles.active : ''}>Giới thiệu</a>
-                    {isLoggedIn && (
+                    {isLoggedIn && Number((user as any)?.roleId) !== 4 && (
                         <a onClick={() => redirect("frontend.admin.dashboard.index")} className={activeLink === '/admin/dashboard' ? styles.active : ''}>Quản lý</a>
                     )}
                 </nav>
                 <div className={styles.authButtons}>
                     {!isLoggedIn ? (
                         <>
-                            <Button className={styles.signupButton} onClick={() => router.push('/register')}>Đăng ký</Button>
-                            <Button type="primary" className={styles.loginButton} onClick={() => router.push('/login')}>Đăng nhập</Button>
+                            <Button className={styles.signupButton} onClick={() => setShowRegister(true)}>Đăng ký</Button>
+                            <Button type="primary" className={styles.loginButton} onClick={() => setShowLogin(true)}>Đăng nhập</Button>
+                            <LoginModal visible={showLogin} onCancel={() => setShowLogin(false)} onRegisterClick={() => setShowRegister(true)} onForgotPasswordClick={() => setShowForgotPassword(true)} />
+                            <RegisterModal visible={showRegister} onCancel={() => setShowRegister(false)} onLoginClick={() => setShowLogin(true)} />
+                            <ForgotPasswordModal visible={showForgotPassword} onCancel={() => setShowForgotPassword(false)} />
                         </>
                     ) : (
                         <Dropdown overlay={menu} trigger={['click']}>
@@ -75,6 +100,11 @@ const MainHeader = () => {
                     )}
                 </div>
             </div>
+            <ChangePassword
+                visible={showChangePassword}
+                onCancel={() => setShowChangePassword(false)}
+                onChangePassword={handleChangePassword}
+            />
         </Header>
     );
 };
